@@ -1,0 +1,146 @@
+import { Button, FormTextField, ThemedText } from '@/components/ui';
+import { RegisterInput, registerSchema, useAuth } from '@/lib/auth';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useRouter } from 'expo-router';
+import { useForm } from 'react-hook-form';
+import { KeyboardAvoidingView, ScrollView, StyleSheet, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+
+const RegisterScreen = () => {
+    const router = useRouter();
+    const { register } = useAuth();
+
+    // Define form
+    const { control, handleSubmit, formState: { errors }, setError } = useForm<RegisterInput>({
+        defaultValues: {
+            name: '',
+            email: '',
+            password: '',
+            password_confirmation: '',
+        },
+        resolver: zodResolver(registerSchema),
+    });
+
+    // Form submit handler
+    const onSubmit = async (input: RegisterInput) => {
+        console.debug('value submitted:', input);
+        const result = await register(input);
+        console.debug('register response:', result);
+
+        if (result.status === "success") {
+            router.replace('/dashboard');
+        } else if (result.status === "error") {
+            // Handle validation errors
+            if (result.errors) {
+                // Iterate over all error fields and set them
+                Object.entries(result.errors).forEach(([field, messages]) => {
+                    setError(field as keyof RegisterInput, {
+                        type: 'manual',
+                        message: Array.isArray(messages) ? messages[0] : messages,
+                    });
+                });
+            } else if (result.message) {
+                // If there are no field-specific errors, but there's a general message
+                // You could show a toast or set a general form error
+                console.error('Registration error:', result.message);
+                // Optional: set error on a specific field or show a toast
+            }
+        }
+    };
+
+    return (
+        <KeyboardAvoidingView behavior="padding" style={styles.container}>
+            <SafeAreaView style={styles.safeAreaContainer}>
+                <ScrollView
+                    style={styles.scrollContainer}
+                    contentContainerStyle={styles.scrollContent}
+                    keyboardShouldPersistTaps="handled"
+                    automaticallyAdjustKeyboardInsets>
+
+                    {/* Header */}
+                    <View style={styles.header}>
+                        <ThemedText type="title">
+                            Create an account
+                        </ThemedText>
+                        <ThemedText type="default">
+                            Should take you less than a minute.
+                        </ThemedText>
+                    </View>
+
+                    {/* Register form */}
+                    <View style={styles.form}>
+                        {/* Name */}
+                        <FormTextField
+                            name="name"
+                            label="Name"
+                            control={control}
+                            error={errors.name} />
+                        {/* Email address */}
+                        <FormTextField
+                            name="email"
+                            label="Email address"
+                            control={control}
+                            error={errors.email} />
+                        {/* Password */}
+                        <FormTextField
+                            name="password"
+                            label="Password"
+                            control={control}
+                            error={errors.password}
+                            secureTextEntry={true}
+                        />
+                        {/* Password confirmation */}
+                        <FormTextField
+                            name="password_confirmation"
+                            label="Password"
+                            control={control}
+                            error={errors.password_confirmation}
+                            secureTextEntry={true}
+                        />
+                        {/* Submit button */}
+                        <Button
+                            size="lg"
+                            color="white"
+                            label="Create your account"
+                            testID="register-submit-button"
+                            onPress={handleSubmit(onSubmit)}
+                        />
+                    </View>
+
+                </ScrollView>
+            </SafeAreaView>
+        </KeyboardAvoidingView>
+    );
+}
+
+export default RegisterScreen;
+
+const styles = StyleSheet.create({
+    // Wrappers
+    container: {
+        flex: 1,
+    },
+    safeAreaContainer: {
+        flex: 1,
+    },
+    scrollContainer: {
+        flex: 1,
+    },
+    scrollContent: {
+        flexGrow: 1,
+        paddingHorizontal: 24,
+        paddingBottom: 24,
+        gap: 24,
+    },
+    header: {
+        gap: 8,
+        flex: 1,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    form: {
+        gap: 12,
+        width: '100%',
+    },
+});
