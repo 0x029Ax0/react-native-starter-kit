@@ -10,7 +10,7 @@ export const updateProfileSchema = z.object({
 export type UpdateProfileInput = {
     name: string;
     email: string;
-    avatar?: File;
+    avatar?: string | undefined;
 };
 
 export type UpdateProfileApiResponse = {

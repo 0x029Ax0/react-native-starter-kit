@@ -31,7 +31,7 @@ import {
     UpdateProfileResponse,
     User
 } from "./types";
-import { handleApiMutation } from "./utils";
+import { getExtension, getMimeType, handleApiMutation } from "./utils";
 
 export const AuthProvider = ({ children }: PropsWithChildren) => {
     const axios = useAxios();
@@ -132,15 +132,30 @@ export const AuthProvider = ({ children }: PropsWithChildren) => {
     }, [changePasswordMutation]);
     
     // Update profile
-    const updateProfileMutation = useApiMutation<UpdateProfileInput, UpdateProfileApiResponse>(
+    const updateProfileMutation = useApiMutation<FormData, UpdateProfileApiResponse>(
         ['auth', 'update-profile'],
         {
             url: 'auth/update-profile',
             method: 'POST',
+            headers: {
+                'Content-Type': 'multipart/form-data',
+            }
         },
     );
     const updateProfile = useCallback(async (input: UpdateProfileInput): Promise<UpdateProfileResponse> => {
-        return handleApiMutation(updateProfileMutation, input, async (response) => {
+        const formData = new FormData();
+        formData.append('name', input.name);
+        formData.append('email', input.email);
+        if (input.avatar) {
+            const mimeType = getMimeType(input.avatar);
+            const extension = getExtension(input.avatar);
+            formData.append('avatar', {
+                uri: input.avatar,
+                type: mimeType,
+                name: 'avatar.' + extension,
+            } as any);
+        }
+        return handleApiMutation(updateProfileMutation, formData, async (response) => {
             console.debug("update profile mutated succesfully", response);
             setUser(response.user);
         });

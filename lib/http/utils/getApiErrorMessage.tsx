@@ -1,5 +1,5 @@
 import type { AxiosError } from "axios";
-import { ApiErrorResponse } from "./types";
+import { ApiErrorResponse } from "../types";
 
 export const getApiErrorMessage = (
     error: AxiosError<ApiErrorResponse>

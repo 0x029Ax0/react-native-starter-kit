@@ -40,7 +40,7 @@
                     "dark": {
                         "backgroundColor": "#111111"
                     }
-                },
+                }
             ],
             [
                 "expo-font",
@@ -87,6 +87,12 @@
                             "./assets/fonts/FiraCode/ttf/FiraCode-Retina.ttf"
                         ]
                     }
+                }
+            ],
+            [
+                "expo-image-picker",
+                {
+                    "photosPermission": "The app accesses your photos so you can upload a custom avatar for your profile."
                 }
             ]
         ],

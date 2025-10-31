@@ -1,9 +1,9 @@
-import { FormTextField, SubmitButton, ThemedText } from "@/components/ui";
+import { AvatarUploadField, Button, FeedbackMessage, FormTextField, ThemedText } from "@/components/ui";
 import { UpdateProfileInput, updateProfileSchema, useAuth } from "@/lib/auth";
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useState } from "react";
-import { useForm } from "react-hook-form";
+import { useEffect, useState } from "react";
+import { Controller, useForm } from "react-hook-form";
 import { ScrollView, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from "react-native-safe-area-context";
 
@@ -16,13 +16,15 @@ const UpdateProfileScreen = () => {
         defaultValues: {
             name: user?.name,
             email: user?.email,
-            avatar: undefined,
         },
         resolver: zodResolver(updateProfileSchema),
     });
 
+    console.debug("errors:", errors);
+
     const onSubmit = async (input: UpdateProfileInput) => {
         console.debug("submitting update profile");
+        console.debug("- input:", input);
         const result = await updateProfile(input);
         console.debug("result:", result);
         if (result.status === "success") {
@@ -46,6 +48,10 @@ const UpdateProfileScreen = () => {
         }
     };
 
+    useEffect(() => {
+        setIsDone(false);
+    }, [setIsDone]);
+
     return (
         <SafeAreaView style={styles.safeAreaContainer}>
             <ScrollView
@@ -53,17 +59,38 @@ const UpdateProfileScreen = () => {
                 contentContainerStyle={styles.scrollContent}
                 keyboardShouldPersistTaps="handled"
                 automaticallyAdjustKeyboardInsets>
+
+                {/* Feedback */}
+                {isDone && (
+                    <FeedbackMessage
+                        message="Your profile has been updated!"
+                        type="success" />
+                )}
+
                 {/* Header */}
                 <View style={styles.header}>
                     <ThemedText type="title">
                         Update your profile
                     </ThemedText>
                 </View>
+
                 {/* Register form */}
                 <View style={styles.form}>
                     {/* Avatar */}
+                    <Controller
+                        control={control}
+                        name="avatar"
+                        render={({ field: { onChange, value } }) => (
+                            <AvatarUploadField
+                                size={200}
+                                editable={true}
+                                currentAvatarUrl={user?.avatar_url}
+                                onImageSelected={onChange}
+                            />
+                        )}
+                    />
                     {/* Name */}
-                    {/* <FormTextField
+                    <FormTextField
                         name="name"
                         label="Name"
                         control={control}
@@ -75,12 +102,15 @@ const UpdateProfileScreen = () => {
                         control={control}
                         error={errors.email} />
                     {/* Submit button */}
-                    <SubmitButton
+                    <Button
+                        size="lg"
+                        color="white"
                         label={"Save changes"}
-                        icon={<MaterialCommunityIcons name="content-save" size={16} />}
+                        icon={<MaterialCommunityIcons name="content-save" size={24} />}
                         onPress={handleSubmit(onSubmit)}
                     />
                 </View>
+
             </ScrollView>
         </SafeAreaView>
     );
@@ -102,12 +132,13 @@ const styles = StyleSheet.create({
     scrollContent: {
         flexGrow: 1,
         paddingHorizontal: 24,
-        paddingVertical: 32,
+        paddingBottom: 24,
         gap: 24,
     },
     // Header
     header: {
         gap: 8,
+        flex: 1,
         marginBottom: 32,
     },
     // Is done

@@ -52,6 +52,7 @@ const ChangePasswordScreen = () => {
                     <View style={styles.header}>
                         <ThemedText type="title">Change your password</ThemedText>
                     </View>
+
                     {/* Register form */}
                     <View style={styles.form}>
                         {/* Password */}
@@ -84,6 +85,7 @@ const ChangePasswordScreen = () => {
                             onPress={handleSubmit(onSubmit)}
                         />
                     </View>
+                    
                 </ScrollView>
             </SafeAreaView>
         </KeyboardAvoidingView>

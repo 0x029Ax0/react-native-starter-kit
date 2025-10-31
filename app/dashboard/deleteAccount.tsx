@@ -1,10 +1,10 @@
-import { FormTextField, SubmitButton, ThemedText } from "@/components/ui";
+import { Button, FormTextField, ThemedText } from "@/components/ui";
 import { DeleteAccountInput, deleteAccountSchema, useAuth } from "@/lib/auth";
 import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "expo-router";
 import { useForm } from "react-hook-form";
-import { ScrollView, StyleSheet, View } from 'react-native';
+import { KeyboardAvoidingView, ScrollView, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from "react-native-safe-area-context";
 
 
@@ -27,39 +27,46 @@ const DeleteAccountScreen = () => {
     }
 
     return (
-        <SafeAreaView style={styles.safeAreaContainer}>
-            <ScrollView
-                style={styles.scrollContainer}
-                contentContainerStyle={styles.scrollContent}
-                keyboardShouldPersistTaps="handled"
-                automaticallyAdjustKeyboardInsets>
-                {/* Header */}
-                <View style={styles.header}>
-                    <ThemedText type="title">Delete your account</ThemedText>
-                    <ThemedText type="default">
-                        Are you sure you want to delete your entire account? All data 
-                        will be permanently deleted. If you are sure please enter your 
-                        password and click on the submit button.
-                    </ThemedText>
-                </View>
-                {/* Register form */}
-                <View style={styles.form}>
-                    {/* Password */}
-                    <FormTextField
-                        name="password"
-                        label="Current password"
-                        control={control}
-                        secureTextEntry={true}
-                        error={errors.password} />
-                    {/* Submit button */}
-                    <SubmitButton
-                        label={"Recover my account"}
-                        icon={<FontAwesome6 name="trash-can" size={16} />}
-                        onPress={handleSubmit(onSubmit)}
-                    />
-                </View>
-            </ScrollView>
-        </SafeAreaView>
+        <KeyboardAvoidingView behavior="padding" style={styles.container}>
+            <SafeAreaView style={styles.safeAreaContainer}>
+                <ScrollView
+                    style={styles.scrollContainer}
+                    contentContainerStyle={styles.scrollContent}
+                    keyboardShouldPersistTaps="handled"
+                    automaticallyAdjustKeyboardInsets>
+                        
+                    {/* Header */}
+                    <View style={styles.header}>
+                        <ThemedText type="title">Delete your account</ThemedText>
+                        <ThemedText type="default">
+                            Are you sure you want to delete your entire account? All data 
+                            will be permanently deleted. If you are sure please enter your 
+                            password and click on the submit button.
+                        </ThemedText>
+                    </View>
+
+                    {/* Register form */}
+                    <View style={styles.form}>
+                        {/* Password */}
+                        <FormTextField
+                            name="password"
+                            label="Current password"
+                            control={control}
+                            secureTextEntry={true}
+                            error={errors.password} />
+                        {/* Submit button */}
+                        <Button
+                            size="lg"
+                            color="white"
+                            label={"Recover my account"}
+                            icon={<FontAwesome6 name="trash-can" size={24} />}
+                            onPress={handleSubmit(onSubmit)}
+                        />
+                    </View>
+
+                </ScrollView>
+            </SafeAreaView>
+        </KeyboardAvoidingView>
     );
 };
 
@@ -79,11 +86,12 @@ const styles = StyleSheet.create({
     scrollContent: {
         flexGrow: 1,
         paddingHorizontal: 24,
-        paddingVertical: 32,
+        paddingBottom: 24,
         gap: 24,
     },
     // Header
     header: {
+        flex: 1,
         gap: 8,
         marginBottom: 32,
     },
