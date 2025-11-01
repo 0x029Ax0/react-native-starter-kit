@@ -20,7 +20,7 @@ const LoginScreen = () => {
     const router = useRouter();
     const { login, oauthRedirect } = useAuth();
 
-    // Define form
+    // Form definition
     const { control, handleSubmit, formState: { errors }, setError } = useForm<LoginCredentials>({
         defaultValues: {
             email: "",

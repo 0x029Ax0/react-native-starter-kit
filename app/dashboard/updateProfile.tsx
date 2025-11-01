@@ -2,7 +2,7 @@ import { AvatarUploadField, Button, FeedbackMessage, FormTextField, ThemedText }
 import { UpdateProfileInput, updateProfileSchema, useAuth } from "@/lib/auth";
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { ScrollView, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -10,8 +10,10 @@ import { SafeAreaView } from "react-native-safe-area-context";
 const UpdateProfileScreen = () => {
     const { user, updateProfile } = useAuth();
 
+    // Display feedback flag
     const [isDone, setIsDone] = useState<boolean>(false);
 
+    // Form definition
     const { control, handleSubmit, formState: { errors }, setError } = useForm<UpdateProfileInput>({
         defaultValues: {
             name: user?.name,
@@ -20,15 +22,17 @@ const UpdateProfileScreen = () => {
         resolver: zodResolver(updateProfileSchema),
     });
 
-    console.debug("errors:", errors);
-
+    // Submit form handler
     const onSubmit = async (input: UpdateProfileInput) => {
-        console.debug("submitting update profile");
-        console.debug("- input:", input);
         const result = await updateProfile(input);
-        console.debug("result:", result);
+        // Succefully updated profile
         if (result.status === "success") {
+            // Display feedback for 3 seconds
             setIsDone(true);
+            setTimeout(() => {
+                setIsDone(false);
+            }, 3000);
+        // Failed to update profile
         } else {
             // Handle validation errors
             if (result.errors) {
@@ -40,17 +44,13 @@ const UpdateProfileScreen = () => {
                     });
                 });
             } else if (result.message) {
+                console.error('update profile error:', result.message);
                 // If there are no field-specific errors, but there's a general message
                 // You could show a toast or set a general form error
-                console.error('Registration error:', result.message);
                 // Optional: set error on a specific field or show a toast
             }
         }
     };
-
-    useEffect(() => {
-        setIsDone(false);
-    }, [setIsDone]);
 
     return (
         <SafeAreaView style={styles.safeAreaContainer}>
@@ -66,14 +66,7 @@ const UpdateProfileScreen = () => {
                         message="Your profile has been updated!"
                         type="success" />
                 )}
-
-                {/* Header */}
-                <View style={styles.header}>
-                    <ThemedText type="title">
-                        Update your profile
-                    </ThemedText>
-                </View>
-
+                
                 {/* Register form */}
                 <View style={styles.form}>
                     {/* Avatar */}
@@ -81,12 +74,15 @@ const UpdateProfileScreen = () => {
                         control={control}
                         name="avatar"
                         render={({ field: { onChange, value } }) => (
-                            <AvatarUploadField
-                                size={200}
-                                editable={true}
-                                currentAvatarUrl={user?.avatar_url}
-                                onImageSelected={onChange}
-                            />
+                            <>
+                                <ThemedText style={styles.avatar_label}>Avatar</ThemedText>
+                                <AvatarUploadField
+                                    size={200}
+                                    editable={true}
+                                    currentAvatarUrl={user?.avatar_url}
+                                    onImageSelected={onChange}
+                                />
+                            </>
                         )}
                     />
                     {/* Name */}
@@ -101,15 +97,16 @@ const UpdateProfileScreen = () => {
                         label="Email"
                         control={control}
                         error={errors.email} />
-                    {/* Submit button */}
-                    <Button
-                        size="lg"
-                        color="white"
-                        label={"Save changes"}
-                        icon={<MaterialCommunityIcons name="content-save" size={24} />}
-                        onPress={handleSubmit(onSubmit)}
-                    />
                 </View>
+
+                {/* Submit button */}
+                <Button
+                    size="lg"
+                    color="white"
+                    label={"Save changes"}
+                    icon={<MaterialCommunityIcons name="content-save" size={24} />}
+                    onPress={handleSubmit(onSubmit)}
+                />
 
             </ScrollView>
         </SafeAreaView>
@@ -162,7 +159,12 @@ const styles = StyleSheet.create({
     },
     // Form
     form: {
+        flex: 1,
         width: '100%',
         gap: 12,
     },
+    avatar_label: {
+        textAlign: 'center',
+        fontWeight: '600',
+    }
 });

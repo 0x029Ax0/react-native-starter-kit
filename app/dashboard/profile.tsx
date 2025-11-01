@@ -11,6 +11,7 @@ type DetailValue = {
 const ProfileScreen = () => {
     const { user } = useAuth();
 
+    // Details to render
     const details: DetailValue[] = [
         {
             key: "ID",

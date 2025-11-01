@@ -12,17 +12,19 @@ const DeleteAccountScreen = () => {
     const router = useRouter();
     const { deleteAccount } = useAuth();
 
-    const { control, setValue, handleSubmit, formState: { errors } } = useForm<DeleteAccountInput>({
+    // Form definition
+    const { control, handleSubmit, formState: { errors } } = useForm<DeleteAccountInput>({
         defaultValues: {
             password: "",
         },
         resolver: zodResolver(deleteAccountSchema),
     });
 
+    // Submit form handler
     const onSubmit = async (input: DeleteAccountInput) => {
         const result = await deleteAccount(input);
         if (result.status === "success") {
-            router.replace("/auth/login");
+            router.replace("/auth");
         }
     }
 
@@ -57,8 +59,8 @@ const DeleteAccountScreen = () => {
                         {/* Submit button */}
                         <Button
                             size="lg"
-                            color="white"
-                            label={"Recover my account"}
+                            color="red"
+                            label={"Delete my account"}
                             icon={<FontAwesome6 name="trash-can" size={24} />}
                             onPress={handleSubmit(onSubmit)}
                         />

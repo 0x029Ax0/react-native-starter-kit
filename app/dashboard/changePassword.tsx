@@ -11,8 +11,10 @@ import { SafeAreaView } from "react-native-safe-area-context";
 const ChangePasswordScreen = () => {
     const { changePassword } = useAuth();
     
+    // Display feedback flag
     const [isDone, setIsDone] = useState<boolean>(false);
     
+    // Form definition
     const { control, setValue, handleSubmit, formState: { errors } } = useForm<ChangePasswordInput>({
         defaultValues: {
             password: '',
@@ -22,10 +24,17 @@ const ChangePasswordScreen = () => {
         resolver: zodResolver(changePasswordSchema),
     });
 
+    // Submit form handler
     const onSubmit = async (input: ChangePasswordInput) => {
         const result = await changePassword(input);
         if (result.status === 'success') {
+            // Display feedback for 3 seconds
             setIsDone(true);
+            setTimeout(() => {
+                setIsDone(false);
+            }, 3000);
+
+            // Reset the form
             setValue("password", "");
             setValue("new_password", "");
             setValue("new_password_confirmation", "");

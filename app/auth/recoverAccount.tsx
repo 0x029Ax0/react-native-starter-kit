@@ -10,14 +10,13 @@ import { KeyboardAvoidingView, ScrollView, StyleSheet, View } from 'react-native
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 const RecoverAccountScreen = () => {
-    // Hooks
     const router = useRouter();
     const { recoverAccount } = useAuth();
 
-    // State
+    // Display feedback flags
     const [isDone, setIsDone] = useState<boolean>(false);
 
-    // Define form
+    // Form definition
     const { control, handleSubmit, formState: { errors } } = useForm<RecoverAccountInput>({
         defaultValues: {
             email: '',
@@ -25,7 +24,7 @@ const RecoverAccountScreen = () => {
         resolver: zodResolver(recoverAccountSchema),
     });
 
-    // Form submit handler
+    // Submit form handler
     const onSubmit = async (input: RecoverAccountInput) => {
         console.debug('value submitted:', input);
         const result = await recoverAccount(input);

@@ -10,7 +10,7 @@ const RegisterScreen = () => {
     const router = useRouter();
     const { register } = useAuth();
 
-    // Define form
+    // Form definition
     const { control, handleSubmit, formState: { errors }, setError } = useForm<RegisterInput>({
         defaultValues: {
             name: '',
@@ -21,12 +21,9 @@ const RegisterScreen = () => {
         resolver: zodResolver(registerSchema),
     });
 
-    // Form submit handler
+    // Submit form handler
     const onSubmit = async (input: RegisterInput) => {
-        console.debug('value submitted:', input);
         const result = await register(input);
-        console.debug('register response:', result);
-
         if (result.status === "success") {
             router.replace('/dashboard');
         } else if (result.status === "error") {
@@ -40,10 +37,7 @@ const RegisterScreen = () => {
                     });
                 });
             } else if (result.message) {
-                // If there are no field-specific errors, but there's a general message
-                // You could show a toast or set a general form error
                 console.error('Registration error:', result.message);
-                // Optional: set error on a specific field or show a toast
             }
         }
     };
