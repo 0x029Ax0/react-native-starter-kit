@@ -1,4 +1,4 @@
-import { PropsWithChildren } from "react";
+import { PropsWithChildren, useMemo } from "react";
 
 import { AuthProvider } from '@/lib/auth';
 import { AxiosProvider } from '@/lib/http';
@@ -10,7 +10,7 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 export const Providers = ({ children }: PropsWithChildren) => {
     const colorScheme = useColorScheme();
-    const queryClient = new QueryClient();
+    const queryClient = useMemo(() => new QueryClient(), []);
 
     return (
         <GestureHandlerRootView style={{ flex: 1 }}>
