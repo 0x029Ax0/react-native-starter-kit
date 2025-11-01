@@ -1,9 +1,8 @@
-import { AxiosError, AxiosResponse, InternalAxiosRequestConfig } from "axios";
 import { useRouter } from "expo-router";
 import * as SecureStore from 'expo-secure-store';
-import { PropsWithChildren, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { PropsWithChildren, useCallback, useEffect, useMemo, useState } from "react";
 import { Platform } from "react-native";
-import { setUnauthorizedHandler, useApiMutation, useAxios } from "../http";
+import { setAuthToken, setUnauthorizedHandler, useApiMutation } from "../http";
 import { AuthContext, AuthState } from "./AuthContext";
 import {
     ChangePasswordInput,
@@ -34,17 +33,12 @@ import {
 import { getExtension, getMimeType, handleApiMutation } from "./utils";
 
 export const AuthProvider = ({ children }: PropsWithChildren) => {
-    const axios = useAxios();
     const router = useRouter();
 
     // State
     const [state, setState] = useState<AuthState>("loading");
     const [user, setUser] = useState<User | null>(null);
     const [accessToken, setAccessToken] = useState<string | null>(null);
-
-    // Reference to the token
-    const tokenRef = useRef<string | null>(null);
-    useEffect(() => { tokenRef.current = accessToken; }, [accessToken]);
 
     // Secure storage for the accessToken
     const accessTokenStoreKey = process.env.EXPO_PUBLIC_API_TOKEN_STORAGE_KEY ?? "starter-kit-access-token";
@@ -238,37 +232,10 @@ export const AuthProvider = ({ children }: PropsWithChildren) => {
         }
     }, [oauthRedirectGoogleMutation, oauthRedirectGithubMutation]);
 
-    // Axios Interceptors
+    // Sync token with AxiosInstance
     useEffect(() => {
-        console.debug("access token changed, setting axios interceptors", accessToken);
-        
-        // Attach token to requests
-        const requestInterceptor = axios.interceptors.request.use((config: InternalAxiosRequestConfig) => {
-            const token = tokenRef.current;
-            if (token) {
-                config.headers = config.headers ?? {};
-                config.headers.Authorization = `Bearer ${token}`;
-            }
-            return config;
-        });
-
-        // Redirect on 401
-        // TODO: send the user a notification
-        const responseInterceptor = axios.interceptors.response.use(
-            (res: AxiosResponse) => res,
-            async (err: AxiosError) => {
-                console.debug("response interceptor");
-                console.debug("- error:", err);
-                return Promise.reject(err);
-            }
-        );
-
-        // Cleanup the interceptors
-        return () => {
-            axios.interceptors.request.eject(requestInterceptor);
-            axios.interceptors.response.eject(responseInterceptor);
-        };
-    }, [axios, accessToken]);
+        setAuthToken(accessToken);
+    }, [accessToken]);
 
     // Bootstrap (on mount)
     useEffect(() => {
