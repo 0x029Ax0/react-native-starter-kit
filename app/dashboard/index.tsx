@@ -1,13 +1,18 @@
-import { ThemedText } from "@/components/ui";
+import { Button, ThemedText } from "@/components/ui";
 import { useAuth } from "@/lib/auth";
 import { Image } from 'expo-image';
-import { ScrollView, StyleSheet } from 'react-native';
+import { ScrollView, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import Logo from "@/assets/images/sharingan.png";
 
 const DashboardScreen = () => {
     const { user } = useAuth();
+
+    const throwError = () => {
+        throw new Error("This is a test exception!");
+    };
+
     return (
         <SafeAreaView style={styles.safeAreaContainer}>
             <ScrollView
@@ -24,6 +29,13 @@ const DashboardScreen = () => {
                 <ThemedText style={styles.text}>
                     You are looking gewd.
                 </ThemedText>
+                <View style={{ marginTop: 24 }}>
+                    <Button 
+                        color="white" 
+                        onPress={throwError} 
+                        label="Throw an error"
+                    />
+                </View>
             </ScrollView>
         </SafeAreaView>
     );

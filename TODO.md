@@ -6,7 +6,7 @@ This document lists potential improvements for the codebase, organized by priori
 
 ## 🔴 Critical Issues (Should Fix Before Production)
 
-### 1. QueryClient Memory Leak
+### 1. QueryClient Memory Leak 
 - **Location**: `components/app/Providers.tsx:13`
 - **Issue**: `new QueryClient()` is created on every render
 - **Impact**: Memory leak, lost cache on re-renders
