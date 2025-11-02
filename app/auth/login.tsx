@@ -1,5 +1,5 @@
 import { Button, FormTextField, OutlineButton, ThemedText } from '@/components/ui';
-import { LoginCredentials, loginSchema, OAuthRedirectResponse, useAuth } from '@/lib/auth';
+import { handleFormErrors, LoginCredentials, loginSchema, OAuthRedirectResponse, useAuth } from '@/lib/auth';
 import AntDesign from '@expo/vector-icons/AntDesign';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Image } from 'expo-image';
@@ -34,10 +34,8 @@ const LoginScreen = () => {
         const result = await login(credentials);
         if (result.status === "success") {
             router.replace("/dashboard");
-        } else if (result.message) {
-            console.debug("error result:", result);
-            const error = result.message;
-            setError("password", { message: error });
+        } else {
+            handleFormErrors(result, { setError, fallbackField: "password" });
         }
     };
 

@@ -1,5 +1,5 @@
 import { Button, FormTextField, ThemedText } from "@/components/ui";
-import { DeleteAccountInput, deleteAccountSchema, useAuth } from "@/lib/auth";
+import { DeleteAccountInput, deleteAccountSchema, handleFormErrors, useAuth } from "@/lib/auth";
 import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "expo-router";
@@ -13,7 +13,7 @@ const DeleteAccountScreen = () => {
     const { deleteAccount } = useAuth();
 
     // Form definition
-    const { control, handleSubmit, formState: { errors, isSubmitting } } = useForm<DeleteAccountInput>({
+    const { control, handleSubmit, formState: { errors, isSubmitting }, setError } = useForm<DeleteAccountInput>({
         defaultValues: {
             password: "",
         },
@@ -25,6 +25,8 @@ const DeleteAccountScreen = () => {
         const result = await deleteAccount(input);
         if (result.status === "success") {
             router.replace("/auth");
+        } else {
+            handleFormErrors(result, { setError, fallbackField: "password" });
         }
     }
 

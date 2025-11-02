@@ -28,11 +28,6 @@ This document lists potential improvements for the codebase, organized by priori
 
 ## 🟡 High Priority (Quality & Reliability)
 
-### 9. No Loading States in Forms
-- **Issue**: Forms don't show loading state during submission
-- **Impact**: Poor UX, multiple submissions possible
-- **Fix**: Add `isSubmitting` checks, disable buttons, show spinners
-
 ### 10. Inconsistent Error Handling
 - **Location**: Compare `app/auth/login.tsx` vs `app/auth/register.tsx`
 - **Issue**: Different patterns for displaying errors

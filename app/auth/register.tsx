@@ -1,5 +1,5 @@
 import { Button, FormTextField, ThemedText } from '@/components/ui';
-import { RegisterInput, registerSchema, useAuth } from '@/lib/auth';
+import { handleFormErrors, RegisterInput, registerSchema, useAuth } from '@/lib/auth';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useRouter } from 'expo-router';
 import { useForm } from 'react-hook-form';
@@ -26,19 +26,8 @@ const RegisterScreen = () => {
         const result = await register(input);
         if (result.status === "success") {
             router.replace('/dashboard');
-        } else if (result.status === "error") {
-            // Handle validation errors
-            if (result.errors) {
-                // Iterate over all error fields and set them
-                Object.entries(result.errors).forEach(([field, messages]) => {
-                    setError(field as keyof RegisterInput, {
-                        type: 'manual',
-                        message: Array.isArray(messages) ? messages[0] : messages,
-                    });
-                });
-            } else if (result.message) {
-                console.error('Registration error:', result.message);
-            }
+        } else {
+            handleFormErrors(result, { setError });
         }
     };
 

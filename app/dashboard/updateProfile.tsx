@@ -1,5 +1,5 @@
 import { AvatarUploadField, Button, FeedbackMessage, FormTextField, ThemedText } from "@/components/ui";
-import { UpdateProfileInput, updateProfileSchema, useAuth } from "@/lib/auth";
+import { handleFormErrors, UpdateProfileInput, updateProfileSchema, useAuth } from "@/lib/auth";
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
@@ -34,21 +34,7 @@ const UpdateProfileScreen = () => {
             }, 3000);
         // Failed to update profile
         } else {
-            // Handle validation errors
-            if (result.errors) {
-                // Iterate over all error fields and set them
-                Object.entries(result.errors).forEach(([field, messages]) => {
-                    setError(field as keyof UpdateProfileInput, {
-                        type: 'manual',
-                        message: Array.isArray(messages) ? messages[0] : messages,
-                    });
-                });
-            } else if (result.message) {
-                console.error('update profile error:', result.message);
-                // If there are no field-specific errors, but there's a general message
-                // You could show a toast or set a general form error
-                // Optional: set error on a specific field or show a toast
-            }
+            handleFormErrors(result, { setError });
         }
     };
 

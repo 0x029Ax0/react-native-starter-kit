@@ -1,5 +1,5 @@
 import { Button, FeedbackMessage, FormTextField, ThemedText } from "@/components/ui";
-import { ChangePasswordInput, changePasswordSchema, useAuth } from "@/lib/auth";
+import { ChangePasswordInput, changePasswordSchema, handleFormErrors, useAuth } from "@/lib/auth";
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
@@ -15,7 +15,7 @@ const ChangePasswordScreen = () => {
     const [isDone, setIsDone] = useState<boolean>(false);
     
     // Form definition
-    const { control, setValue, handleSubmit, formState: { errors, isSubmitting } } = useForm<ChangePasswordInput>({
+    const { control, setValue, handleSubmit, formState: { errors, isSubmitting }, setError } = useForm<ChangePasswordInput>({
         defaultValues: {
             password: '',
             new_password: '',
@@ -38,6 +38,8 @@ const ChangePasswordScreen = () => {
             setValue("password", "");
             setValue("new_password", "");
             setValue("new_password_confirmation", "");
+        } else {
+            handleFormErrors(result, { setError, fallbackField: "password" });
         }
     }
 

@@ -1,5 +1,5 @@
 import { Button, FormTextField, ThemedText } from '@/components/ui';
-import { RecoverAccountInput, recoverAccountSchema, useAuth } from '@/lib/auth';
+import { handleFormErrors, RecoverAccountInput, recoverAccountSchema, useAuth } from '@/lib/auth';
 import Fontisto from '@expo/vector-icons/Fontisto';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -17,7 +17,7 @@ const RecoverAccountScreen = () => {
     const [isDone, setIsDone] = useState<boolean>(false);
 
     // Form definition
-    const { control, handleSubmit, formState: { errors, isSubmitting } } = useForm<RecoverAccountInput>({
+    const { control, handleSubmit, formState: { errors, isSubmitting }, setError } = useForm<RecoverAccountInput>({
         defaultValues: {
             email: '',
         },
@@ -26,13 +26,12 @@ const RecoverAccountScreen = () => {
 
     // Submit form handler
     const onSubmit = async (input: RecoverAccountInput) => {
-        console.debug('value submitted:', input);
         const result = await recoverAccount(input);
-        console.debug('recover account response:', result);
         if (result.status === "success") {
-            console.debug('api request was a success');
             setIsDone(true);
-            router.back();
+            setTimeout(() => router.back(), 2000);
+        } else {
+            handleFormErrors(result, { setError, fallbackField: "email" });
         }
     };
 
