@@ -75,7 +75,7 @@ const RegisterScreen = () => {
                         {/* Password confirmation */}
                         <FormTextField
                             name="password_confirmation"
-                            label="Password"
+                            label="Confirm Password"
                             control={control}
                             error={errors.password_confirmation}
                             secureTextEntry={true}

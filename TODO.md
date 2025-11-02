@@ -24,18 +24,6 @@ This document lists potential improvements for the codebase, organized by priori
 - **Impact**: Security risk in production builds
 - **Fix**: Make conditional based on `__DEV__` or remove for production builds
 
----
-
-## 🟡 High Priority (Quality & Reliability)
-
-### 10. Inconsistent Error Handling
-- **Location**: Compare `app/auth/login.tsx` vs `app/auth/register.tsx`
-- **Issue**: Different patterns for displaying errors
-- **Impact**: Inconsistent UX, some errors only logged
-- **Fix**: Standardize error display pattern across all forms
-
----
-
 ## 🟢 Medium Priority (UX & Code Quality)
 
 ### 11. Wrong Label on Password Confirmation
@@ -49,12 +37,6 @@ This document lists potential improvements for the codebase, organized by priori
 - **Issue**: `console.debug()` calls everywhere
 - **Impact**: Leaks implementation details, clutters logs
 - **Fix**: Replace with proper logging service, remove in production
-
-### 13. Starter Kit Naming
-- **Location**: `lib/auth/AuthProvider.tsx:50`, `.env:3`
-- **Issue**: Default token key is `"starter-kit-access-token"`
-- **Impact**: Unprofessional, suggests unfinished template
-- **Fix**: Rename to app-specific key (e.g., `"app-access-token"`)
 
 ### 14. No Offline Support
 - **Issue**: No persistence for TanStack Query, no offline detection
