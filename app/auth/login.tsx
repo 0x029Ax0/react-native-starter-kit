@@ -99,7 +99,11 @@ const LoginScreen = () => {
                     name="email"
                     label="Email address"
                     control={control}
-                    error={errors.email} />
+                    error={errors.email}
+                    textContentType="emailAddress"
+                    autoComplete="email"
+                    keyboardType="email-address"
+                />
                 {/* Password */}
                 <FormTextField
                     name="password"
@@ -107,6 +111,8 @@ const LoginScreen = () => {
                     control={control}
                     error={errors.password}
                     secureTextEntry={true}
+                    textContentType="password"
+                    autoComplete="current-password"
                 />
                 {/* Submit button */}
                 <Button

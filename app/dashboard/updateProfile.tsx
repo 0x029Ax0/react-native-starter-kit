@@ -72,13 +72,20 @@ const UpdateProfileScreen = () => {
                     name="name"
                     label="Name"
                     control={control}
-                    error={errors.name} />
+                    error={errors.name}
+                    textContentType="name"
+                    autoComplete="name"
+                />
                 {/* Email address */}
                 <FormTextField
                     name="email"
                     label="Email"
                     control={control}
-                    error={errors.email} />
+                    error={errors.email}
+                    textContentType="emailAddress"
+                    autoComplete="email"
+                    keyboardType="email-address"
+                />
             </View>
             {/* Submit button */}
             <Button

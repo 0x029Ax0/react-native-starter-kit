@@ -73,7 +73,10 @@ const DeleteAccountScreen = () => {
                     label="Current password"
                     control={control}
                     secureTextEntry={true}
-                    error={errors.password} />
+                    error={errors.password}
+                    textContentType="password"
+                    autoComplete="current-password"
+                />
                 {/* Submit button */}
                 <Button
                     size="lg"

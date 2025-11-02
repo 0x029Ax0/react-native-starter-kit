@@ -50,13 +50,20 @@ const RegisterScreen = () => {
                     name="name"
                     label="Name"
                     control={control}
-                    error={errors.name} />
+                    error={errors.name}
+                    textContentType="name"
+                    autoComplete="name"
+                />
                 {/* Email address */}
                 <FormTextField
                     name="email"
                     label="Email address"
                     control={control}
-                    error={errors.email} />
+                    error={errors.email}
+                    textContentType="emailAddress"
+                    autoComplete="email"
+                    keyboardType="email-address"
+                />
                 {/* Password */}
                 <FormTextField
                     name="password"
@@ -64,6 +71,8 @@ const RegisterScreen = () => {
                     control={control}
                     error={errors.password}
                     secureTextEntry={true}
+                    textContentType="newPassword"
+                    autoComplete="new-password"
                 />
                 {/* Password confirmation */}
                 <FormTextField
@@ -72,6 +81,8 @@ const RegisterScreen = () => {
                     control={control}
                     error={errors.password_confirmation}
                     secureTextEntry={true}
+                    textContentType="newPassword"
+                    autoComplete="new-password"
                 />
                 {/* Submit button */}
                 <Button

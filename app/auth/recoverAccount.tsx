@@ -57,7 +57,11 @@ const RecoverAccountScreen = () => {
                             name="email"
                             label="Email address"
                             control={control}
-                            error={errors.email} />
+                            error={errors.email}
+                            textContentType="emailAddress"
+                            autoComplete="email"
+                            keyboardType="email-address"
+                        />
                         {/* Submit button */}
                         <Button
                             size="lg"

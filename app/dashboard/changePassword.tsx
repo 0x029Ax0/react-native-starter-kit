@@ -66,21 +66,30 @@ const ChangePasswordScreen = () => {
                     label="Current password"
                     control={control}
                     secureTextEntry={true}
-                    error={errors.password} />
+                    error={errors.password}
+                    textContentType="password"
+                    autoComplete="current-password"
+                />
                 {/* Confirm password */}
                 <FormTextField
                     name="new_password"
                     label="New password"
                     control={control}
                     secureTextEntry={true}
-                    error={errors.new_password} />
+                    error={errors.new_password}
+                    textContentType="newPassword"
+                    autoComplete="new-password"
+                />
                 {/* Confirm new password */}
                 <FormTextField
                     name="new_password_confirmation"
                     label="Confirm new password"
                     control={control}
                     secureTextEntry={true}
-                    error={errors.new_password_confirmation} />
+                    error={errors.new_password_confirmation}
+                    textContentType="newPassword"
+                    autoComplete="new-password"
+                />
                 {/* Submit button */}
                 <Button
                     size="lg"
