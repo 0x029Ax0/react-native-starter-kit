@@ -1,5 +1,5 @@
 import { useThemeColor } from '@/lib/theme';
-import { Control, Controller, FieldError, FieldPath, FieldValues, RegisterOptions } from 'react-hook-form';
+import { Control, Controller, FieldError, FieldPath, FieldValues, PathValue, RegisterOptions } from 'react-hook-form';
 import { StyleSheet, Text, TextInput, TextInputProps, View } from 'react-native';
 
 /**
@@ -35,7 +35,7 @@ export function FormTextField<TFieldValues extends FieldValues = FieldValues>({
             name={name}
             control={control}
             rules={rules}
-            defaultValue={defaultValue}
+            defaultValue={defaultValue as PathValue<TFieldValues, FieldPath<TFieldValues>>}
             render={({ field: { onChange, onBlur, value }, fieldState: { error } }) => (
                 <View style={styles.root}>
                     {label ? (

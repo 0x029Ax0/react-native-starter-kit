@@ -58,26 +58,29 @@ export const handleFormErrors = <TFieldValues extends FieldValues>(
     if (errorResponse.errors) {
         Object.entries(errorResponse.errors).forEach(([field, messages]) => {
             const errorMessage = Array.isArray(messages) ? messages[0] : messages;
-            setError(field as Path<TFieldValues>, {
-                type: 'manual',
-                message: errorMessage,
-            });
+            if (errorMessage) {
+                setError(field as Path<TFieldValues>, {
+                    type: 'manual',
+                    message: errorMessage,
+                });
+            }
         });
     }
 
     // Handle general error message (not tied to a specific field)
     if (errorResponse.message && !errorResponse.errors) {
+        const message = errorResponse.message; // Type narrowing
         if (fallbackField) {
             // Set the error on the specified fallback field
             setError(fallbackField, {
                 type: 'manual',
-                message: errorResponse.message,
+                message,
             });
         } else {
             // Set as a root-level error
             setError('root' as Path<TFieldValues>, {
                 type: 'manual',
-                message: errorResponse.message,
+                message,
             });
         }
     }

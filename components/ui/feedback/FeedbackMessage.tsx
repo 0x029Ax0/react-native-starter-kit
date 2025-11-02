@@ -18,7 +18,7 @@ type FeedbackMessageTypeStylingProperties = {
     icon: ReactNode;
 };
 
-type FeedbackMessageTypeStyling = Record<string, FeedbackMessageTypeStylingProperties>;
+type FeedbackMessageTypeStyling = Record<FeedbackMessageType, FeedbackMessageTypeStylingProperties>;
 
 const typeStyling: FeedbackMessageTypeStyling = {
     success: {

@@ -5,7 +5,7 @@ import * as SplashScreen from 'expo-splash-screen';
 import { useEffect } from 'react';
 import 'react-native-reanimated';
 
-export { ErrorBoundary } from '@/components/ui';
+// ErrorBoundary is handled by Providers component using react-native-error-boundary
 
 SplashScreen.preventAutoHideAsync();
 

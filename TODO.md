@@ -26,12 +26,6 @@ This document lists potential improvements for the codebase, organized by priori
 
 ## 🟢 Medium Priority (UX & Code Quality)
 
-### 11. Wrong Label on Password Confirmation
-- **Location**: `app/auth/register.tsx:89`
-- **Issue**: Password confirmation field labeled "Password" instead of "Confirm Password"
-- **Impact**: Confusing for users
-- **Fix**: Change label to "Confirm Password"
-
 ### 12. Production Logging
 - **Location**: Throughout codebase
 - **Issue**: `console.debug()` calls everywhere
@@ -57,11 +51,6 @@ This document lists potential improvements for the codebase, organized by priori
 - **Issue**: Only password login, no biometric option
 - **Impact**: Less convenient for returning users
 - **Fix**: Add expo-local-authentication for Face ID/Touch ID
-
-### 21. Missing Haptic Feedback
-- **Issue**: expo-haptics installed but not used
-- **Impact**: Less tactile experience
-- **Fix**: Add haptics on button presses, success/error states
 
 ### 22. No Image Compression
 - **Issue**: Avatar uploads send full-size images
@@ -107,18 +96,7 @@ This document lists potential improvements for the codebase, organized by priori
 - **Issue**: All auth methods manually call `handleApiMutation`
 - **Fix**: Could create higher-order function to reduce boilerplate
 
----
-
 ## 🔧 Development Experience
-
-### 31. Missing TypeScript Strict Checks
-- **Location**: `tsconfig.json`
-- **Issue**: Could enable stricter TypeScript settings
-- **Fix**: Enable `noUncheckedIndexedAccess`, `exactOptionalPropertyTypes`
-
-### 32. No Pre-commit Hooks
-- **Issue**: No linting/formatting enforcement
-- **Fix**: Add husky + lint-staged
 
 ### 33. No Test Suite
 - **Issue**: No tests for critical auth flows
@@ -128,26 +106,3 @@ This document lists potential improvements for the codebase, organized by priori
 - **Issue**: Requires live backend for development
 - **Fix**: Add MSW (Mock Service Worker) for API mocking
 
----
-
-## Summary by Severity
-
-- **🔴 Critical (1-5)**: Must fix before production
-- **🟡 High (6-10)**: Should fix for quality release
-- **🟢 Medium (11-17)**: UX and polish improvements
-- **🔵 Low (18-27)**: Nice-to-have features
-- **📋 Architectural (28-30)**: Long-term code health
-- **🔧 Dev Experience (31-34)**: Development workflow
-
----
-
-## Quick Wins (Easy fixes with high impact)
-
-1. Fix QueryClient memory leak (#1) - 1 line change
-2. Fix password confirmation label (#11) - 1 line change
-3. Rename starter-kit token key (#13) - 2 line change
-4. Add loading states to buttons (#9) - Use `isSubmitting` from react-hook-form
-
----
-
-*Generated from codebase review on 2025-11-01*
