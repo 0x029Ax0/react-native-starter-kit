@@ -35,6 +35,12 @@ const RootLayout = () => {
                 drawerItemStyle: {
                     borderRadius: 5,
                 },
+                drawerLabelStyle: {
+                    fontFamily: "FiraCode",
+                },
+                headerTitleStyle: {
+                    fontFamily: "FiraCode",
+                }
             }}>
             <Drawer.Screen name="index" options={{ 
                 title: "Dashboard", 

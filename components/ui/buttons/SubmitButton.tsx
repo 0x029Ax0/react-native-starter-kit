@@ -73,6 +73,7 @@ const styles = StyleSheet.create({
         color: "#000",
         textAlign: "center",
         textTransform: "uppercase",
+        fontFamily: "FiraCode",
         fontWeight: "600", // must be a string in RN
         marginLeft: 10,
     },

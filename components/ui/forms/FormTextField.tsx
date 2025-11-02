@@ -71,7 +71,8 @@ const styles = StyleSheet.create({
         fontSize: 14, 
         marginBottom: 6, 
         fontWeight: '600', 
-        color: '#111827'
+        color: '#111827',
+        fontFamily: "FiraCode",
     },
     labelError: { color: '#d93025' },
     input: {
@@ -84,6 +85,7 @@ const styles = StyleSheet.create({
         paddingHorizontal: 12,
         paddingVertical: 10,
         fontSize: 16,
+        fontFamily: "FiraCode",
         outlineWidth: 0,
     },
     inputError: { borderColor: '#d93025' },

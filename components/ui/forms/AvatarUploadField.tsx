@@ -235,5 +235,6 @@ const styles = StyleSheet.create({
     },
     hint: {
         fontSize: 12,
+        fontFamily: "FiraCode",
     },
 });

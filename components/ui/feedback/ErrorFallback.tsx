@@ -77,20 +77,24 @@ const styles = StyleSheet.create({
         fontWeight: 700,
         textAlign: "center",
         marginBottom: 12,
+        fontFamily: "FiraCode",
     },
     intro: {
         color: "#fff",
         marginBottom: 20,
         lineHeight: 22,
+        fontFamily: "FiraCode",
     },
     label: {
         color: "#fff",
         fontSize: 16,
         fontWeight: 600,
-        marginBottom: 5
+        marginBottom: 5,
+        fontFamily: "FiraCode",
     },
     error: {
         color: "#fff",
         lineHeight: 22,
+        fontFamily: "FiraCode",
     }
 });

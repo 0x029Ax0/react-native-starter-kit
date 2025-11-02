@@ -60,9 +60,13 @@ const ProfileScreen = () => {
 
                 {/* Avatar */}
                 <View style={[styles.avatar_wrapper, {}]}>
+                    
                     <Image
                         style={styles.avatar}
-                        source={{ uri: user?.avatar_url }}
+                        source={ user?.avatar_url
+                            ? { uri: user.avatar_url }
+                            : require('@/assets/images/sharingan.png')
+                        }
                         contentFit="cover"
                         transition={300}
                         onError={(error) => logger.debug("image load error:", error)}
@@ -145,9 +149,11 @@ const styles = StyleSheet.create({
     detail_key: {
         flex: 1,
         color: "#fff",
+        fontFamily: "FiraCode",
     },
     detail_value: {
         flex: 1,
         color: "#fff",
+        fontFamily: "FiraCode",
     },
 });

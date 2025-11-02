@@ -3,8 +3,8 @@
 This document contains a comprehensive analysis of bugs, security vulnerabilities, UX/UI problems, architectural issues, and improvement opportunities identified in the codebase.
 
 **Analysis Date**: 2025-11-02
-**Total Issues Identified**: 34
-**Critical**: 7 | **High**: 5 | **Medium**: 14 | **Low**: 8
+**Total Issues Identified**: 30
+**Critical**: 7 | **High**: 4 | **Medium**: 12 | **Low**: 7
 
 ---
 
@@ -255,50 +255,6 @@ export const logger = {
 // Replace all console.debug
 - console.debug("recover account mutated succesfully", response);
 + logger.debug("recover account mutated succesfully", response);
-```
-
----
-
-### 9. Hardcoded Test Error Button in Dashboard
-
-**Severity**: HIGH
-**Category**: Code Quality / UX
-**Location**: `app/dashboard/index.tsx:10-13, 48-56`
-
-**Issue**:
-Debug component that intentionally crashes app left in production code.
-
-```tsx
-const ComponentWithErrors = () => {
-    throw new Error("This component just crashed, oh noes!");
-};
-
-// Rendered in production:
-<Button
-    color="white"
-    onPress={() => setTriggerError(true)}
-    label="Throw an error"
-/>
-{triggerError && <ComponentWithErrors />}
-```
-
-**Impact**:
-- Users can intentionally crash the app
-- Unprofessional UX
-- Bad first impression
-
-**Fix**:
-```tsx
-// Remove entirely or guard with __DEV__
-{__DEV__ && (
-    <>
-        <Button
-            onPress={() => setTriggerError(true)}
-            label="[DEV] Test Error Boundary"
-        />
-        {triggerError && <ComponentWithErrors />}
-    </>
-)}
 ```
 
 ---
@@ -597,32 +553,6 @@ useEffect(() => {
 
 ---
 
-### 18. No Null Check on User Avatar URL
-
-**Severity**: MEDIUM
-**Category**: UX
-**Location**: `app/dashboard/profile.tsx:64`, `components/ui/layouts/CustomDrawerContent.tsx:34`
-
-**Issue**:
-Avatar image displayed without handling null/undefined.
-
-```tsx
-<Image
-    source={{ uri: user?.avatar_url }}  // Could be undefined
-/>
-```
-
-**Fix**:
-```tsx
-<Image
-    source={
-        user?.avatar_url
-            ? { uri: user.avatar_url }
-            : require('@/assets/images/default-avatar.png')
-    }
-/>
-```
-
 ---
 
 ### 19. Missing Accessibility Labels
@@ -688,32 +618,6 @@ if (!(payload instanceof FormData)) {
 
 ---
 
-### 22. Poor User-Facing Error Messages
-
-**Severity**: MEDIUM
-**Category**: UX
-**Location**: All form validation
-
-**Issue**:
-Error messages are technical, not user-friendly.
-
-**Current**:
-```tsx
-password: z.string().min(8, "Min 8 characters")
-```
-
-**Better**:
-```tsx
-password: z.string().min(8, "Password must be at least 8 characters long")
-```
-
-**Fix across all forms**:
-- "Email is required" → "Please enter your email address"
-- "Invalid email" → "Please enter a valid email address"
-- "Min 8 characters" → "Password must be at least 8 characters"
-
----
-
 ### 23. Token Stored in Two Places (Architecture)
 
 **Severity**: MEDIUM
@@ -738,30 +642,6 @@ const [accessToken, setAccessToken] = useState<string | null>(null);
 
 **Fix**:
 Consider using Context API for token or move entirely to AuthProvider state.
-
----
-
-### 26. Axios Instance Not Memoized
-
-**Severity**: MEDIUM
-**Category**: Performance
-**Location**: `lib/http/AxiosContext.tsx`
-
-**Issue**:
-New axios instance created on every render.
-
-**Fix**:
-```tsx
-export const AxiosProvider = ({ children }: PropsWithChildren) => {
-    const instance = useMemo(() => http, []);  // Memoize instance
-
-    return (
-        <AxiosContext.Provider value={instance}>
-            {children}
-        </AxiosContext.Provider>
-    );
-};
-```
 
 ---
 
@@ -794,20 +674,6 @@ const onRefresh = useCallback(async () => {
 
 ---
 
-### 28. Inconsistent Font Usage
-
-**Severity**: LOW
-**Category**: Design
-**Location**: `app/auth/login.tsx:84`
-
-**Issue**:
-FiraCode font loaded globally but only used once.
-
-**Fix**:
-Either use consistently throughout app or remove from `app.json`.
-
----
-
 ### 29. Missing Input Autofill Support
 
 **Severity**: LOW
@@ -834,7 +700,7 @@ No `textContentType` for iOS autofill.
 
 ---
 
-### 30. No Image Compression on Upload
+### - 30. No Image Compression on Upload
 
 **Severity**: LOW
 **Category**: Performance
@@ -853,23 +719,6 @@ const compressedImage = await ImageManipulator.manipulateAsync(
     { compress: 0.7, format: ImageManipulator.SaveFormat.JPEG }
 );
 ```
-
----
-
-### 31. Missing TypeScript Exact Optional Properties
-
-**Severity**: LOW
-**Category**: Code Quality
-**Location**: `tsconfig.json`
-
-**Issue**:
-`exactOptionalPropertyTypes` disabled due to library incompatibilities.
-
-**Impact**:
-Less type safety on optional properties.
-
-**Fix**:
-Re-enable when libraries support it or use more careful typing.
 
 ---
 
@@ -906,19 +755,5 @@ Shows ActivityIndicator instead of content skeleton.
 
 **Fix**:
 Create skeleton placeholders that match actual content layout.
-
----
-
-### 34. Inconsistent Haptic Feedback
-
-**Severity**: LOW
-**Category**: UX
-**Location**: Various
-
-**Issue**:
-Haptics defined but not used everywhere (drawer navigation, tab switches).
-
-**Fix**:
-Add haptics to all interactive elements consistently.
 
 ---

@@ -3,7 +3,6 @@
     "compilerOptions": {
         "strict": true,
         "noUncheckedIndexedAccess": true,
-        // "exactOptionalPropertyTypes": true, // Disabled: causes issues with external libraries (expo-image, react-hook-form)
         "jsx": "react-jsx",
         "baseUrl": ".",
         "paths": {

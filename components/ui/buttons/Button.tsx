@@ -157,6 +157,7 @@ const styles = StyleSheet.create({
         marginRight: 10,
     },
     text: {
+        fontFamily: "FiraCode",
         textAlign: "center",
         textTransform: "uppercase",
         fontWeight: "600", // must be a string in RN

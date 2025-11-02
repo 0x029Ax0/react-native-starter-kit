@@ -72,5 +72,6 @@ const styles = StyleSheet.create({
     },
     feedback_message_text: {
         fontSize: 16,
+        fontFamily: "FiraCode",
     }
 });
