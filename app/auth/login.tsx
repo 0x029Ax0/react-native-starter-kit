@@ -1,5 +1,6 @@
 import { Button, FormTextField, OutlineButton, ThemedText } from '@/components/ui';
 import { handleFormErrors, LoginCredentials, loginSchema, OAuthRedirectResponse, useAuth } from '@/lib/auth';
+import { triggerSuccessHaptic } from '@/lib/utils/haptics';
 import AntDesign from '@expo/vector-icons/AntDesign';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Image } from 'expo-image';
@@ -33,6 +34,7 @@ const LoginScreen = () => {
     const onSubmit = async (credentials: LoginCredentials) => {
         const result = await login(credentials);
         if (result.status === "success") {
+            triggerSuccessHaptic();
             router.replace("/dashboard");
         } else {
             handleFormErrors(result, { setError, fallbackField: "password" });

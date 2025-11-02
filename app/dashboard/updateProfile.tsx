@@ -1,5 +1,6 @@
 import { AvatarUploadField, Button, FeedbackMessage, FormTextField, ThemedText } from "@/components/ui";
 import { handleFormErrors, UpdateProfileInput, updateProfileSchema, useAuth } from "@/lib/auth";
+import { triggerSuccessHaptic } from "@/lib/utils/haptics";
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
@@ -27,6 +28,9 @@ const UpdateProfileScreen = () => {
         const result = await updateProfile(input);
         // Succefully updated profile
         if (result.status === "success") {
+            // Trigger success haptic feedback
+            triggerSuccessHaptic();
+
             // Display feedback for 3 seconds
             setIsDone(true);
             setTimeout(() => {

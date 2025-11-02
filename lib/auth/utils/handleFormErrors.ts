@@ -1,3 +1,4 @@
+import { triggerErrorHaptic } from '@/lib/utils/haptics';
 import { FieldValues, Path, UseFormSetError } from 'react-hook-form';
 
 /**
@@ -44,6 +45,9 @@ export const handleFormErrors = <TFieldValues extends FieldValues>(
     options: HandleFormErrorsOptions<TFieldValues>
 ): void => {
     const { setError, fallbackField, logErrors = __DEV__ } = options;
+
+    // Trigger error haptic feedback
+    triggerErrorHaptic();
 
     // Log errors in development for debugging
     if (logErrors) {

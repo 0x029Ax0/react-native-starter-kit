@@ -1,3 +1,4 @@
+import { triggerLightHaptic } from '@/lib/utils/haptics';
 import { ReactNode } from "react";
 import { ActivityIndicator, GestureResponderEvent, Platform, Pressable, StyleSheet, Text, View } from "react-native";
 
@@ -76,9 +77,15 @@ export const Button = ({ onPress, disabled = false, loading = false, label = "Su
     const textSizeStyles = buttonSizes[size].textStyles;
     const isDisabled = disabled || loading;
 
+    const handlePress = (e: GestureResponderEvent) => {
+        // Trigger haptic feedback on button press
+        triggerLightHaptic();
+        onPress(e);
+    };
+
     return (
         <Pressable
-            onPress={onPress}
+            onPress={handlePress}
             disabled={isDisabled}
             accessibilityRole="button"
             accessibilityLabel={label}

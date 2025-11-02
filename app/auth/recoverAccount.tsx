@@ -1,5 +1,6 @@
 import { Button, FormTextField, ThemedText } from '@/components/ui';
 import { handleFormErrors, RecoverAccountInput, recoverAccountSchema, useAuth } from '@/lib/auth';
+import { triggerSuccessHaptic } from '@/lib/utils/haptics';
 import Fontisto from '@expo/vector-icons/Fontisto';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -28,6 +29,9 @@ const RecoverAccountScreen = () => {
     const onSubmit = async (input: RecoverAccountInput) => {
         const result = await recoverAccount(input);
         if (result.status === "success") {
+            // Trigger success haptic feedback
+            triggerSuccessHaptic();
+
             setIsDone(true);
             setTimeout(() => router.back(), 2000);
         } else {

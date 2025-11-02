@@ -38,27 +38,11 @@ This document lists potential improvements for the codebase, organized by priori
 - **Impact**: Leaks implementation details, clutters logs
 - **Fix**: Replace with proper logging service, remove in production
 
-### 14. No Offline Support
-- **Issue**: No persistence for TanStack Query, no offline detection
-- **Impact**: Poor experience on flaky networks
-- **Fix**: Add AsyncStorage persister for queries, handle offline states
-
 ### 15. Missing Loading States in Screens
 - **Location**: `app/dashboard/profile.tsx`, `app/dashboard/index.tsx`
 - **Issue**: No loading indicators for data fetching
 - **Impact**: Blank screens while loading
 - **Fix**: Add skeleton screens or loading indicators
-
-### 16. No Form Reset After Success
-- **Issue**: Forms don't reset after successful submission
-- **Impact**: Can accidentally resubmit same data
-- **Fix**: Call `reset()` after successful operations
-
-### 17. Hardcoded Brand Name
-- **Location**: `app/auth/login.tsx:88`
-- **Issue**: "Floppie AI" hardcoded in login screen
-- **Impact**: Hard to rebrand, not configurable
-- **Fix**: Move to config/constants file
 
 ---
 
@@ -68,11 +52,6 @@ This document lists potential improvements for the codebase, organized by priori
 - **Issue**: Can't manually refresh data in profile/dashboard
 - **Impact**: Stale data if user wants to check updates
 - **Fix**: Add RefreshControl to scrollable screens
-
-### 19. No Analytics Integration
-- **Issue**: No tracking for user actions, errors
-- **Impact**: Can't measure engagement, hard to debug production issues
-- **Fix**: Add analytics service (Amplitude, Mixpanel, Firebase Analytics, etc.)
 
 ### 20. No Biometric Authentication
 - **Issue**: Only password login, no biometric option
@@ -104,11 +83,6 @@ This document lists potential improvements for the codebase, organized by priori
 - **Issue**: No `textContentType` props on inputs
 - **Impact**: iOS autofill doesn't work
 - **Fix**: Add appropriate `textContentType` values (username, password, etc.)
-
-### 26. Missing Accessibility Labels
-- **Issue**: No `accessibilityLabel` on many touchable elements
-- **Impact**: Poor screen reader experience
-- **Fix**: Add accessibility props throughout
 
 ### 27. No Rate Limiting Protection
 - **Issue**: No client-side rate limiting on API calls

@@ -1,5 +1,6 @@
 import { Button, FormTextField, ThemedText } from '@/components/ui';
 import { handleFormErrors, RegisterInput, registerSchema, useAuth } from '@/lib/auth';
+import { triggerSuccessHaptic } from '@/lib/utils/haptics';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useRouter } from 'expo-router';
 import { useForm } from 'react-hook-form';
@@ -25,6 +26,7 @@ const RegisterScreen = () => {
     const onSubmit = async (input: RegisterInput) => {
         const result = await register(input);
         if (result.status === "success") {
+            triggerSuccessHaptic();
             router.replace('/dashboard');
         } else {
             handleFormErrors(result, { setError });
