@@ -785,29 +785,6 @@ export function FormLayout({ children }: PropsWithChildren) {
     );
 }
 ```
-
----
-
-### 25. Error Boundary Not Resettable
-
-**Severity**: MEDIUM
-**Category**: UX
-**Location**: `components/ui/feedback/ErrorFallback.tsx`
-
-**Issue**:
-Error boundary button doesn't actually reset the error, just navigates.
-
-**Fix**:
-```tsx
-<Button
-    label="Try again"
-    onPress={() => {
-        resetError();  // Reset error boundary state
-        router.replace('/dashboard');
-    }}
-/>
-```
-
 ---
 
 ### 26. Axios Instance Not Memoized
