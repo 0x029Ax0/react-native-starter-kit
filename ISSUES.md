@@ -117,49 +117,6 @@ export default function OAuthCallback() {
 
 ---
 
-### 3. Missing Environment Variable Validation
-
-**Severity**: CRITICAL
-**Category**: Configuration
-**Location**: `lib/http/AxiosInstance.tsx:20`
-
-**Issue**:
-No runtime validation that required environment variables are set. Falls back to `http://localhost/api` silently.
-
-```tsx
-baseURL: process.env.EXPO_PUBLIC_API_BASE_URL ?? "http://localhost/api", // Unsafe fallback
-```
-
-**Impact**:
-- App could run against wrong backend without warning
-- Confusing errors with unclear root cause
-- Production builds might silently fail
-
-**Fix**:
-```tsx
-// lib/config/validateEnv.ts
-export function validateEnv() {
-    const required = [
-        'EXPO_PUBLIC_API_BASE_URL',
-        'EXPO_PUBLIC_API_TOKEN_STORAGE_KEY',
-    ];
-
-    const missing = required.filter(key => !process.env[key]);
-
-    if (missing.length > 0) {
-        throw new Error(
-            `Missing required environment variables:\n${missing.join('\n')}\n\n` +
-            `Please check your .env file.`
-        );
-    }
-}
-
-// app/_layout.tsx - call on startup
-validateEnv();
-```
-
----
-
 ### 4. Token Not Cleared from Axios on Logout
 
 **Severity**: HIGH
@@ -197,40 +154,6 @@ const logoutLocally = useCallback(() => {
 
 ---
 
-### 5. Sensitive Data in Error Logs
-
-**Severity**: HIGH
-**Category**: Security / Privacy
-**Location**: `components/app/Providers.tsx:17-21`, multiple locations
-
-**Issue**:
-Error boundary and request handlers log full error objects that could contain sensitive data.
-
-```tsx
-const logError = (error: Error, stacktrace: string) => {
-    console.debug("error boundary");
-    console.debug("- error:", error);  // Could contain tokens, user data
-    console.debug("- stacktrace:", stacktrace);
-};
-```
-
-**Impact**:
-- Tokens, API keys, user data exposed in console
-- Error reporting services might capture sensitive info
-- GDPR compliance issue
-
-**Fix**:
-```tsx
-const logError = (error: Error, stacktrace: string) => {
-    if (__DEV__) {
-        console.debug("error boundary", error, stacktrace);
-    } else {
-        // Only log sanitized error message in production
-        console.error("Application error:", error.message);
-        // Send to error tracking service (sanitized)
-    }
-};
-```
 
 ---
 

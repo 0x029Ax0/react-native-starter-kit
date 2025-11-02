@@ -15,9 +15,11 @@ export const Providers = ({ children }: PropsWithChildren) => {
     const queryClient = useMemo(() => new QueryClient(), []);
 
     const logError = (error: Error, stacktrace: string) => {
-        console.debug("error boundary");
-        console.debug("- error:", error);
-        console.debug("- stacktrace:", stacktrace);
+        if (__DEV__) {
+            console.debug("error boundary", error, stacktrace);
+        } else {
+            console.error("Application error:", error.message);
+        }
     };
 
     return (

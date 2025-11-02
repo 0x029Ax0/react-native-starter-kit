@@ -213,7 +213,8 @@ export const AuthProvider = ({ children }: PropsWithChildren) => {
 
     // Logout the user
     const logoutLocally = useCallback(() => {
-        setAccessToken(null);
+        setAuthToken(null);    // Clear Axios header immediately
+        setAccessToken(null);  // Then clear state
         setUser(null);
         setState('guest');
         router.replace('/auth/login');
@@ -340,7 +341,10 @@ export const AuthProvider = ({ children }: PropsWithChildren) => {
 
                 if (isAuthError) {
                     console.debug("Authentication error detected, logging out");
-                    setAccessToken(null);
+                    setAuthToken(null);    // Clear Axios header immediately
+                    setAccessToken(null);  // Then clear state
+                    setUser(null);
+                    setState('guest');
                     // app/index.tsx will handle redirect to /auth
                 } else {
                     // For network errors, keep user logged in but set state appropriately
