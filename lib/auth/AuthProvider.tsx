@@ -4,6 +4,7 @@ import { PropsWithChildren, useCallback, useEffect, useMemo, useRef, useState } 
 import { Platform } from "react-native";
 import { setAuthToken, setUnauthorizedHandler, useApiMutation } from "../http";
 import { FormDataFile } from "../types/formData";
+import { logger } from "../utils/logger";
 import { AuthContext, AuthState } from "./AuthContext";
 import {
     ChangePasswordInput,
@@ -31,38 +32,8 @@ import {
     UpdateProfileResponse,
     User
 } from "./types";
-import { getExtension, getMimeType, handleApiMutation } from "./utils";
+import { getExtension, getMimeType, handleApiMutation, retryWithBackoff } from "./utils";
 
-/**
- * Retry utility with exponential backoff
- * @param fn Function to retry
- * @param maxAttempts Maximum number of attempts
- * @param delayMs Initial delay in milliseconds
- */
-async function retryWithBackoff<T>(
-    fn: () => Promise<T>,
-    maxAttempts: number = 3,
-    delayMs: number = 2000
-): Promise<T> {
-    let lastError: any;
-
-    for (let attempt = 0; attempt < maxAttempts; attempt++) {
-        try {
-            return await fn();
-        } catch (error) {
-            lastError = error;
-
-            // Don't retry on the last attempt
-            if (attempt < maxAttempts - 1) {
-                const waitTime = delayMs * Math.pow(2, attempt);
-                console.debug(`Retry attempt ${attempt + 1} failed, waiting ${waitTime}ms before retry...`);
-                await new Promise(resolve => setTimeout(resolve, waitTime));
-            }
-        }
-    }
-
-    throw lastError;
-}
 
 export const AuthProvider = ({ children }: PropsWithChildren) => {
     const router = useRouter();
@@ -98,6 +69,17 @@ export const AuthProvider = ({ children }: PropsWithChildren) => {
             return null;
         }
     };
+    const clearAccessToken = useCallback(async () => {
+        try {
+            if (Platform.OS === "web") {
+                localStorage.removeItem(accessTokenStoreKey);
+            } else {
+                await SecureStore.deleteItemAsync(accessTokenStoreKey);
+            }
+        } catch (error) {
+            console.warn("Failed to clear token from storage:", error);
+        }
+    }, [accessTokenStoreKey]);
 
     // Register a new user
     const registerMutation = useApiMutation<RegisterInput, RegisterApiResponse>(
@@ -120,7 +102,7 @@ export const AuthProvider = ({ children }: PropsWithChildren) => {
     );
     const recoverAccount = useCallback(async (input: RecoverAccountInput): Promise<RecoverAccountResponse> => {
         return handleApiMutation(recoverAccountMutation, input, async (response) => {
-            console.debug("recover account mutated succesfully", response);
+            logger.debug("recover account mutated succesfully", response);
         });
     }, [recoverAccountMutation]);
 
@@ -131,7 +113,7 @@ export const AuthProvider = ({ children }: PropsWithChildren) => {
     );
     const resetPassword = useCallback(async (input: ResetPasswordInput): Promise<ResetPasswordResponse> => {
         return handleApiMutation(resetPasswordMutation, input, async (response) => {
-            console.debug("reset password mutated succesfully", response);
+            logger.debug("reset password mutated succesfully", response);
         });
     }, [resetPasswordMutation]);
     
@@ -159,7 +141,7 @@ export const AuthProvider = ({ children }: PropsWithChildren) => {
     );
     const changePassword = useCallback(async (input: ChangePasswordInput): Promise<ChangePasswordResponse> => {
         return handleApiMutation(changePasswordMutation, input, async (response) => {
-            console.debug("change password mutated succesfully", response);
+            logger.debug("change password mutated succesfully", response);
         });
     }, [changePasswordMutation]);
     
@@ -189,7 +171,7 @@ export const AuthProvider = ({ children }: PropsWithChildren) => {
             formData.append('avatar', avatarFile as unknown as Blob);
         }
         return handleApiMutation(updateProfileMutation, formData, async (response) => {
-            console.debug("update profile mutated succesfully", response);
+            logger.debug("update profile mutated succesfully", response);
             setUser(response.user);
         });
     }, [updateProfileMutation, setUser]);
@@ -204,7 +186,7 @@ export const AuthProvider = ({ children }: PropsWithChildren) => {
     );
     const deleteAccount = useCallback(async (input: DeleteAccountInput): Promise<DeleteAccountResponse> => {
         return handleApiMutation(deleteAccountMutation, input, async (response) => {
-            console.debug("delete account mutated succesfully", response);
+            logger.debug("delete account mutated succesfully", response);
             setAccessToken(null);
             setUser(null);
             setState('guest');
@@ -212,13 +194,14 @@ export const AuthProvider = ({ children }: PropsWithChildren) => {
     }, [deleteAccountMutation, setAccessToken, setUser, setState]);
 
     // Logout the user
-    const logoutLocally = useCallback(() => {
-        setAuthToken(null);    // Clear Axios header immediately
-        setAccessToken(null);  // Then clear state
+    const logoutLocally = useCallback(async () => {
+        await clearAccessToken(); // Clear from storage
+        setAuthToken(null);       // Clear Axios header
+        setAccessToken(null);     // Clear state
         setUser(null);
         setState('guest');
         router.replace('/auth/login');
-    }, [router]);
+    }, [router, clearAccessToken]);
     const logoutMutation = useApiMutation<null, LogoutResponse>(
         ['auth', 'logout'],
         {
@@ -228,7 +211,7 @@ export const AuthProvider = ({ children }: PropsWithChildren) => {
     );
     const logout = useCallback(async (): Promise<LogoutResponse> => {
         return handleApiMutation(logoutMutation, null, async (response) => {
-            console.debug("logout mutated succesfully", response);
+            logger.debug("logout mutated succesfully", response);
             logoutLocally();
         });
     }, [logoutMutation]);
@@ -243,7 +226,7 @@ export const AuthProvider = ({ children }: PropsWithChildren) => {
     );
     const refresh = useCallback(async (): Promise<RefreshResponse> => {
         return handleApiMutation(refreshMutation, null, async (response) => {
-            console.debug("refresh mutated succesfully", response);
+            logger.debug("refresh mutated succesfully", response);
             setState("authenticated");
             setUser(response.user);
         });
@@ -263,11 +246,11 @@ export const AuthProvider = ({ children }: PropsWithChildren) => {
         default:
         case "google":
             return handleApiMutation(oauthRedirectGoogleMutation, input, async (response) => {
-                console.debug("oauth redirecting google mutated succesfully", response);
+                logger.debug("oauth redirecting google mutated succesfully", response);
             });
         case "github":
             return handleApiMutation(oauthRedirectGithubMutation, input, async (response) => {
-                console.debug("oauth redirecting github mutated succesfully", response);
+                logger.debug("oauth redirecting github mutated succesfully", response);
             });
         }
     }, [oauthRedirectGoogleMutation, oauthRedirectGithubMutation]);
@@ -291,7 +274,7 @@ export const AuthProvider = ({ children }: PropsWithChildren) => {
                 }
             })
             .catch((error) => {
-                console.debug("get access token error:", error);
+                logger.debug("get access token error:", error);
                 // On error, assume guest state
                 setState("guest");
             });
@@ -332,7 +315,7 @@ export const AuthProvider = ({ children }: PropsWithChildren) => {
             .catch((error) => {
                 if (!isMounted.current) return;
 
-                console.debug("Token refresh failed after retries:", error);
+                logger.debug("Token refresh failed after retries:", error);
 
                 // Only logout on authentication errors (401/403), not network errors
                 // Check if error has a response with 401 or 403 status
@@ -340,22 +323,23 @@ export const AuthProvider = ({ children }: PropsWithChildren) => {
                 const isAuthError = statusCode === 401 || statusCode === 403;
 
                 if (isAuthError) {
-                    console.debug("Authentication error detected, logging out");
-                    setAuthToken(null);    // Clear Axios header immediately
-                    setAccessToken(null);  // Then clear state
+                    logger.debug("Authentication error detected, logging out");
+                    clearAccessToken();    // Clear from storage (don't await in effect)
+                    setAuthToken(null);    // Clear Axios header
+                    setAccessToken(null);  // Clear state
                     setUser(null);
                     setState('guest');
                     // app/index.tsx will handle redirect to /auth
                 } else {
                     // For network errors, keep user logged in but set state appropriately
-                    console.debug("Network/server error - keeping user logged in");
+                    logger.debug("Network/server error - keeping user logged in");
                     setState("authenticated");
                 }
             })
             .finally(() => {
                 isRefreshing.current = false;
             });
-    }, [accessToken, user, refresh]);
+    }, [accessToken, user, refresh, clearAccessToken]);
 
     // Compose the object we're making available through the provider
     const value = useMemo(() => ({

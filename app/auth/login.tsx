@@ -1,6 +1,7 @@
 import { Button, FormTextField, OutlineButton, ThemedText } from '@/components/ui';
 import { handleFormErrors, LoginCredentials, loginSchema, OAuthRedirectResponse, useAuth } from '@/lib/auth';
 import { triggerSuccessHaptic } from '@/lib/utils/haptics';
+import { logger } from '@/lib/utils/logger';
 import AntDesign from '@expo/vector-icons/AntDesign';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Image } from 'expo-image';
@@ -50,20 +51,20 @@ const LoginScreen = () => {
     const handleClickGoogle = async () => {
         try {
             const oauthResult: OAuthRedirectResponse = await oauthRedirect({ provider: "google" });
-            console.debug("clicked google, result:", oauthResult);
+            logger.debug("clicked google, result:", oauthResult);
             if (oauthResult.status === "success") {
                 const visitResult = await WebBrowser.openBrowserAsync(oauthResult.data.redirect_url);
-                console.debug("visiting result:", visitResult);
+                logger.debug("visiting result:", visitResult);
             }
         } catch (error) {
-            console.debug("google oauth redirect error:", error);
+            logger.debug("google oauth redirect error:", error);
         }
     };
 
     // OAuth: github click handler
     const handleClickGithub = async () => {
         const result = await oauthRedirect({ provider: "github" });
-        console.debug("clicked github, result:", result);
+        logger.debug("clicked github, result:", result);
     };
     
     return (

@@ -1,5 +1,6 @@
 import { useAuth } from "@/lib/auth";
 import { useMinimumLoadingTime } from "@/lib/hooks/useMinimumLoadingTime";
+import { logger } from "@/lib/utils/logger";
 import { Image } from "expo-image";
 import { ActivityIndicator, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -64,8 +65,8 @@ const ProfileScreen = () => {
                         source={{ uri: user?.avatar_url }}
                         contentFit="cover"
                         transition={300}
-                        onError={(error) => console.debug("image load error:", error)}
-                        onLoad={() => console.debug("image loaded succesfully")}
+                        onError={(error) => logger.debug("image load error:", error)}
+                        onLoad={() => logger.debug("image loaded succesfully")}
                     />
                 </View>
 

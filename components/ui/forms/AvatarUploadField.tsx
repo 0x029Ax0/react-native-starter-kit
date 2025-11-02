@@ -12,6 +12,10 @@ import {
     View
 } from 'react-native';
 
+// Avatar upload validation constants
+const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
+const ALLOWED_MIME_TYPES = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
+
 type AvatarUploadProps = {
     currentAvatarUrl?: string | null;
     onImageSelected?: (imageUri: string) => void;
@@ -30,6 +34,36 @@ export const AvatarUploadField = ({
     const isDark = colorScheme === 'dark';
 
     const displayImage = selectedImage || currentAvatarUrl;
+
+    /**
+     * Validates an image asset before accepting it
+     * @param asset The image asset from ImagePicker
+     * @returns True if valid, shows alert and returns false if invalid
+     */
+    const validateImage = (asset: ImagePicker.ImagePickerAsset): boolean => {
+        // Validate file size
+        if (asset.fileSize && asset.fileSize > MAX_FILE_SIZE) {
+            const sizeMB = (asset.fileSize / (1024 * 1024)).toFixed(1);
+            Alert.alert(
+                'File Too Large',
+                `Image must be smaller than 5MB. Selected image is ${sizeMB}MB.`,
+                [{ text: 'OK' }]
+            );
+            return false;
+        }
+
+        // Validate MIME type
+        if (asset.mimeType && !ALLOWED_MIME_TYPES.includes(asset.mimeType.toLowerCase())) {
+            Alert.alert(
+                'Invalid File Type',
+                'Only JPEG, PNG, and WebP images are allowed.',
+                [{ text: 'OK' }]
+            );
+            return false;
+        }
+
+        return true;
+    };
 
     const requestPermission = async () => {
         if (Platform.OS !== 'web') {
@@ -59,9 +93,15 @@ export const AvatarUploadField = ({
         });
 
         if (!result.canceled && result.assets[0]) {
-            const imageUri = result.assets[0].uri;
-            setSelectedImage(imageUri);
-            onImageSelected?.(imageUri);
+            const asset = result.assets[0];
+
+            // Validate the image before accepting it
+            if (!validateImage(asset)) {
+                return;
+            }
+
+            setSelectedImage(asset.uri);
+            onImageSelected?.(asset.uri);
         }
     };
 
@@ -84,9 +124,15 @@ export const AvatarUploadField = ({
         });
 
         if (!result.canceled && result.assets[0]) {
-            const imageUri = result.assets[0].uri;
-            setSelectedImage(imageUri);
-            onImageSelected?.(imageUri);
+            const asset = result.assets[0];
+
+            // Validate the image before accepting it
+            if (!validateImage(asset)) {
+                return;
+            }
+
+            setSelectedImage(asset.uri);
+            onImageSelected?.(asset.uri);
         }
     };
 
