@@ -1,7 +1,7 @@
 import z from "zod";
 
 export const recoverAccountSchema = z.object({
-    email: z.string().email('Enter a valid email'),
+    email: z.string().email('Please enter a valid email address'),
 });
 
 export type RecoverAccountInput = z.infer<typeof recoverAccountSchema>;

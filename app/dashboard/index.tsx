@@ -46,15 +46,19 @@ const DashboardScreen = () => {
                 <ThemedText style={styles.text}>
                     You are looking gewd.
                 </ThemedText>
-                <View style={{ marginTop: 24 }}>
-                    <Button 
-                        color="white" 
-                        onPress={() => setTriggerError(true)} 
-                        label="Throw an error"
-                    />
-                </View>
-                {triggerError && (
-                    <ComponentWithErrors />
+                {__DEV__ && (
+                    <>
+                        <View style={{ marginTop: 24 }}>
+                            <Button
+                                color="white"
+                                onPress={() => setTriggerError(true)}
+                                label="[DEV] Test Error Boundary"
+                            />
+                        </View>
+                        {triggerError && (
+                            <ComponentWithErrors />
+                        )}
+                    </>
                 )}
             </ScrollView>
         </SafeAreaView>

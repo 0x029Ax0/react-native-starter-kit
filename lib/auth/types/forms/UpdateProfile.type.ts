@@ -2,8 +2,8 @@ import { z } from "zod";
 import { User } from "../User.type";
 
 export const updateProfileSchema = z.object({
-    name: z.string().min(1, "Please enter your name."),
-    email: z.string().email("Please enter a valid email."),
+    name: z.string().min(1, "Please enter your name"),
+    email: z.string().email("Please enter a valid email address"),
     avatar: z.string().optional(),
 });
 

@@ -1,4 +1,4 @@
-import { Button, FormTextField, ThemedText } from '@/components/ui';
+import { Button, FormLayout, FormTextField, ThemedText } from '@/components/ui';
 import { handleFormErrors, RecoverAccountInput, recoverAccountSchema, useAuth } from '@/lib/auth';
 import { triggerSuccessHaptic } from '@/lib/utils/haptics';
 import Fontisto from '@expo/vector-icons/Fontisto';
@@ -7,8 +7,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useRouter } from 'expo-router';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { KeyboardAvoidingView, ScrollView, StyleSheet, View } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { StyleSheet, View } from 'react-native';
 
 const RecoverAccountScreen = () => {
     const router = useRouter();
@@ -40,59 +39,51 @@ const RecoverAccountScreen = () => {
     };
 
     return (
-        <KeyboardAvoidingView behavior="padding" style={styles.container}>
-            <SafeAreaView style={styles.safeAreaContainer}>
-                <ScrollView
-                    style={styles.scrollContainer}
-                    contentContainerStyle={styles.scrollContent}
-                    keyboardShouldPersistTaps="handled"
-                    automaticallyAdjustKeyboardInsets>
-                    {!isDone && (
-                        <>
-                            {/* Header */}
-                            <View style={styles.header}>
-                                <ThemedText type="title">Recover your account</ThemedText>
-                                <ThemedText type="default">
-                                    Fill in your email address below and you will be sent
-                                    instructions on how you can recover your account.
-                                </ThemedText>
-                            </View>
-                            {/* Register form */}
-                            <View style={styles.form}>
-                                {/* Email address */}
-                                <FormTextField
-                                    name="email"
-                                    label="Email address"
-                                    control={control}
-                                    error={errors.email} />
-                                {/* Submit button */}
-                                <Button
-                                    size="lg"
-                                    color="white"
-                                    label={"Recover my account"}
-                                    loading={isSubmitting}
-                                    icon={<MaterialIcons name="quick-contacts-mail" size={16} color="black" />}
-                                    onPress={handleSubmit(onSubmit)}
-                                />
-                            </View>
-                        </>
-                    )}
-                    {isDone && (
-                        <View style={styles.isDone}>
-                            <ThemedText type="title" style={styles.isDoneTitle}>
-                                Email has been sent!
-                            </ThemedText>
-                            <ThemedText style={{ marginTop: 60, marginBottom: 20 }}>
-                                <Fontisto name="email" size={128} />
-                            </ThemedText>
-                            <ThemedText type="default" style={styles.isDoneText}>
-                                Please follow the instructions in the email we just sent you to recover your account.
-                            </ThemedText>
-                        </View>
-                    )}
-                </ScrollView>
-            </SafeAreaView>
-        </KeyboardAvoidingView>
+        <FormLayout>
+            {!isDone && (
+                <>
+                    {/* Header */}
+                    <View style={styles.header}>
+                        <ThemedText type="title">Recover your account</ThemedText>
+                        <ThemedText type="default">
+                            Fill in your email address below and you will be sent
+                            instructions on how you can recover your account.
+                        </ThemedText>
+                    </View>
+                    {/* Register form */}
+                    <View style={styles.form}>
+                        {/* Email address */}
+                        <FormTextField
+                            name="email"
+                            label="Email address"
+                            control={control}
+                            error={errors.email} />
+                        {/* Submit button */}
+                        <Button
+                            size="lg"
+                            color="white"
+                            label={"Recover my account"}
+                            loading={isSubmitting}
+                            icon={<MaterialIcons name="quick-contacts-mail" size={16} color="black" />}
+                            onPress={handleSubmit(onSubmit)}
+                        />
+                    </View>
+                </>
+            )}
+            {isDone && (
+                <View style={styles.isDone}>
+                    <ThemedText type="title" style={styles.isDoneTitle}>
+                        Email has been sent!
+                    </ThemedText>
+                    <ThemedText style={{ marginTop: 60, marginBottom: 20 }}>
+                        <Fontisto name="email" size={128} />
+                    </ThemedText>
+                    <ThemedText type="default" style={styles.isDoneText}>
+                        Please follow the instructions in the email we just sent you to recover your account.
+                    </ThemedText>
+                </View>
+            )}
+        </FormLayout>
     );
 }
 

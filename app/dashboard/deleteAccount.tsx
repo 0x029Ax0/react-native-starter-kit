@@ -1,11 +1,10 @@
-import { Button, FormTextField, ThemedText } from "@/components/ui";
+import { Button, FormLayout, FormTextField, ThemedText } from "@/components/ui";
 import { DeleteAccountInput, deleteAccountSchema, handleFormErrors, useAuth } from "@/lib/auth";
 import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "expo-router";
 import { useForm } from "react-hook-form";
-import { KeyboardAvoidingView, ScrollView, StyleSheet, View } from 'react-native';
-import { SafeAreaView } from "react-native-safe-area-context";
+import { StyleSheet, View } from 'react-native';
 
 
 const DeleteAccountScreen = () => {
@@ -31,47 +30,36 @@ const DeleteAccountScreen = () => {
     }
 
     return (
-        <KeyboardAvoidingView behavior="padding" style={styles.container}>
-            <SafeAreaView style={styles.safeAreaContainer}>
-                <ScrollView
-                    style={styles.scrollContainer}
-                    contentContainerStyle={styles.scrollContent}
-                    keyboardShouldPersistTaps="handled"
-                    automaticallyAdjustKeyboardInsets>
-                        
-                    {/* Header */}
-                    <View style={styles.header}>
-                        <ThemedText type="title">Delete your account</ThemedText>
-                        <ThemedText type="default">
-                            Are you sure you want to delete your entire account? All data 
-                            will be permanently deleted. If you are sure please enter your 
-                            password and click on the submit button.
-                        </ThemedText>
-                    </View>
-
-                    {/* Register form */}
-                    <View style={styles.form}>
-                        {/* Password */}
-                        <FormTextField
-                            name="password"
-                            label="Current password"
-                            control={control}
-                            secureTextEntry={true}
-                            error={errors.password} />
-                        {/* Submit button */}
-                        <Button
-                            size="lg"
-                            color="red"
-                            label={"Delete my account"}
-                            loading={isSubmitting}
-                            icon={<FontAwesome6 name="trash-can" size={24} />}
-                            onPress={handleSubmit(onSubmit)}
-                        />
-                    </View>
-
-                </ScrollView>
-            </SafeAreaView>
-        </KeyboardAvoidingView>
+        <FormLayout>     
+            {/* Header */}
+            <View style={styles.header}>
+                <ThemedText type="title">Delete your account</ThemedText>
+                <ThemedText type="default">
+                    Are you sure you want to delete your entire account? All data 
+                    will be permanently deleted. If you are sure please enter your 
+                    password and click on the submit button.
+                </ThemedText>
+            </View>
+            {/* Register form */}
+            <View style={styles.form}>
+                {/* Password */}
+                <FormTextField
+                    name="password"
+                    label="Current password"
+                    control={control}
+                    secureTextEntry={true}
+                    error={errors.password} />
+                {/* Submit button */}
+                <Button
+                    size="lg"
+                    color="red"
+                    label={"Delete my account"}
+                    loading={isSubmitting}
+                    icon={<FontAwesome6 name="trash-can" size={24} />}
+                    onPress={handleSubmit(onSubmit)}
+                />
+            </View>
+        </FormLayout>
     );
 };
 

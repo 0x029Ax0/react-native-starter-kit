@@ -1,4 +1,4 @@
-import { Button, FormTextField, OutlineButton, ThemedText } from '@/components/ui';
+import { Button, FormLayout, FormTextField, OutlineButton, ThemedText } from '@/components/ui';
 import { handleFormErrors, LoginCredentials, loginSchema, OAuthRedirectResponse, useAuth } from '@/lib/auth';
 import { triggerSuccessHaptic } from '@/lib/utils/haptics';
 import { logger } from '@/lib/utils/logger';
@@ -9,12 +9,9 @@ import { useRouter } from 'expo-router';
 import * as WebBrowser from 'expo-web-browser';
 import { useForm } from 'react-hook-form';
 import {
-    KeyboardAvoidingView,
-    ScrollView,
     StyleSheet,
     View
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 
 import logo from '@/assets/images/sharingan.png';
 
@@ -68,81 +65,71 @@ const LoginScreen = () => {
     };
     
     return (
-        <KeyboardAvoidingView behavior="padding" style={styles.container}>
-            <SafeAreaView style={styles.safeAreaContainer}>
-                <ScrollView
-                    style={styles.scrollContainer}
-                    contentContainerStyle={styles.scrollContent}
-                    keyboardShouldPersistTaps="handled"
-                    automaticallyAdjustKeyboardInsets>
-
-                    {/* Header */}
-                    <View style={styles.header}>
-                        <View style={styles.logoWrapper}>
-                            <Image style={styles.logo} source={logo} contentFit="contain" transition={300} />
-                        </View>
-                        <View style={styles.intro}>
-                            <ThemedText type="title" style={{ textAlign: 'center', fontFamily: 'FiraCode' }}>
-                                Welcome back
-                            </ThemedText>
-                            <ThemedText type="default" style={{ textAlign: 'center', fontFamily: 'FiraCode' }}>
-                                Sign in to access your Floppie AI dashboard.
-                            </ThemedText>
-                        </View>
-                    </View>
-                    
-                    {/* Form */}
-                    <View style={styles.form}>
-                        {/* Email address */}
-                        <FormTextField
-                            name="email"
-                            label="Email address"
-                            control={control}
-                            error={errors.email} />
-                        {/* Password */}
-                        <FormTextField
-                            name="password"
-                            label="Password"
-                            control={control}
-                            error={errors.password}
-                            secureTextEntry={true}
+        <FormLayout>
+            {/* Header */}
+            <View style={styles.header}>
+                <View style={styles.logoWrapper}>
+                    <Image style={styles.logo} source={logo} contentFit="contain" transition={300} />
+                </View>
+                <View style={styles.intro}>
+                    <ThemedText type="title" style={{ textAlign: 'center', fontFamily: 'FiraCode' }}>
+                        Welcome back
+                    </ThemedText>
+                    <ThemedText type="default" style={{ textAlign: 'center', fontFamily: 'FiraCode' }}>
+                        Sign in to access your Floppie AI dashboard.
+                    </ThemedText>
+                </View>
+            </View>
+            {/* Form */}
+            <View style={styles.form}>
+                {/* Email address */}
+                <FormTextField
+                    name="email"
+                    label="Email address"
+                    control={control}
+                    error={errors.email} />
+                {/* Password */}
+                <FormTextField
+                    name="password"
+                    label="Password"
+                    control={control}
+                    error={errors.password}
+                    secureTextEntry={true}
+                />
+                {/* Submit button */}
+                <Button
+                    size="lg"
+                    color="white"
+                    label="Sign in"
+                    loading={isSubmitting}
+                    testID="login-submit-button"
+                    onPress={handleSubmit(onSubmit)}
+                />
+                {/* OAuth options */}
+                <View style={styles.oauthWrapper}>
+                    <View style={{ flex: 1 }}>
+                        <OutlineButton 
+                            label="Google" 
+                            onPress={handleClickGoogle} 
+                            icon={<AntDesign name="google" size={24} />} 
                         />
-                        {/* Submit button */}
-                        <Button
-                            size="lg"
-                            color="white"
-                            label="Sign in"
-                            loading={isSubmitting}
-                            testID="login-submit-button"
-                            onPress={handleSubmit(onSubmit)}
-                        />
-                        {/* OAuth options */}
-                        <View style={styles.oauthWrapper}>
-                            <View style={{ flex: 1 }}>
-                                <OutlineButton 
-                                    label="Google" 
-                                    onPress={handleClickGoogle} 
-                                    icon={<AntDesign name="google" size={24} />} 
-                                />
-                            </View>
-                            <View style={{ flex: 1 }}>
-                                <OutlineButton 
-                                    label="Github"
-                                    onPress={handleClickGithub} 
-                                    icon={<AntDesign name="github" size={24} />} 
-                                />
-                            </View>
-                        </View>
-                        {/* Recover account link */}
-                        <View style={styles.recoverAccountWrapper}>
-                            <ThemedText onPress={handleClickRecoverAccount}>
-                                Forgot your password?
-                            </ThemedText>
-                        </View>
                     </View>
-                </ScrollView>
-            </SafeAreaView>
-        </KeyboardAvoidingView>
+                    <View style={{ flex: 1 }}>
+                        <OutlineButton 
+                            label="Github"
+                            onPress={handleClickGithub} 
+                            icon={<AntDesign name="github" size={24} />} 
+                        />
+                    </View>
+                </View>
+                {/* Recover account link */}
+                <View style={styles.recoverAccountWrapper}>
+                    <ThemedText onPress={handleClickRecoverAccount}>
+                        Forgot your password?
+                    </ThemedText>
+                </View>
+            </View>
+        </FormLayout>
     );
 }
 

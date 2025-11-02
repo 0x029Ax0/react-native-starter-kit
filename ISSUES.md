@@ -649,19 +649,6 @@ Form inputs don't have proper accessibility labels.
 
 ---
 
-### 20. No Confirmation Dialog for Destructive Actions
-
-**Severity**: MEDIUM
-**Category**: UX
-**Location**: `app/dashboard/deleteAccount.tsx`
-
-**Issue**:
-Account deletion proceeds immediately without confirmation.
-
-**Fix**: See Issue #16 above.
-
----
-
 ### 21. FormData Content-Type Header Conflict
 
 **Severity**: MEDIUM
@@ -752,39 +739,6 @@ const [accessToken, setAccessToken] = useState<string | null>(null);
 **Fix**:
 Consider using Context API for token or move entirely to AuthProvider state.
 
----
-
-### 24. Repeating Form Layout Pattern
-
-**Severity**: MEDIUM
-**Category**: Code Quality
-**Location**: All auth screens
-
-**Issue**:
-Same KeyboardAvoidingView + ScrollView pattern repeated across all forms.
-
-**Fix**:
-```tsx
-// components/ui/layouts/FormLayout.tsx
-export function FormLayout({ children }: PropsWithChildren) {
-    return (
-        <SafeAreaView style={styles.safeAreaContainer}>
-            <KeyboardAvoidingView
-                style={styles.keyboardAvoidingContainer}
-                behavior={Platform.OS === "ios" ? "padding" : "height"}
-                keyboardVerticalOffset={Platform.OS === "ios" ? 0 : 20}>
-                <ScrollView
-                    style={styles.scrollContainer}
-                    contentContainerStyle={styles.scrollContent}
-                    keyboardShouldPersistTaps="handled"
-                    automaticallyAdjustKeyboardInsets>
-                    {children}
-                </ScrollView>
-            </KeyboardAvoidingView>
-        </SafeAreaView>
-    );
-}
-```
 ---
 
 ### 26. Axios Instance Not Memoized

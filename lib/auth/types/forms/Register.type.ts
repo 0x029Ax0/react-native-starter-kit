@@ -3,13 +3,13 @@ import { User } from '../User.type';
 
 export const registerSchema = z
     .object({
-        name: z.string().min(1, 'Name is required'),
-        email: z.string().email('Enter a valid email'),
-        password: z.string().min(8, 'Min 8 characters'),
-        password_confirmation: z.string().min(8, 'Min 8 characters'),
+        name: z.string().min(1, 'Please enter your name'),
+        email: z.string().email('Please enter a valid email address'),
+        password: z.string().min(8, 'Password must be at least 8 characters long'),
+        password_confirmation: z.string().min(8, 'Password must be at least 8 characters long'),
     })
     .refine((data) => data.password === data.password_confirmation, {
-        message: 'Passwords do not match.',
+        message: 'Passwords do not match',
         path: ['password_confirmation'],
     });
 

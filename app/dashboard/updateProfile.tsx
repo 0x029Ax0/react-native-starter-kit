@@ -1,12 +1,11 @@
-import { AvatarUploadField, Button, FeedbackMessage, FormTextField, ThemedText } from "@/components/ui";
+import { AvatarUploadField, Button, FeedbackMessage, FormLayout, FormTextField, ThemedText } from "@/components/ui";
 import { handleFormErrors, UpdateProfileInput, updateProfileSchema, useAuth } from "@/lib/auth";
 import { triggerSuccessHaptic } from "@/lib/utils/haptics";
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
-import { ScrollView, StyleSheet, View } from 'react-native';
-import { SafeAreaView } from "react-native-safe-area-context";
+import { StyleSheet, View } from 'react-native';
 
 const UpdateProfileScreen = () => {
     const { user, updateProfile } = useAuth();
@@ -43,64 +42,54 @@ const UpdateProfileScreen = () => {
     };
 
     return (
-        <SafeAreaView style={styles.safeAreaContainer}>
-            <ScrollView
-                style={styles.scrollContainer}
-                contentContainerStyle={styles.scrollContent}
-                keyboardShouldPersistTaps="handled"
-                automaticallyAdjustKeyboardInsets>
-
-                {/* Feedback */}
-                {isDone && (
-                    <FeedbackMessage
-                        message="Your profile has been updated!"
-                        type="success" />
-                )}
-                
-                {/* Register form */}
-                <View style={styles.form}>
-                    {/* Avatar */}
-                    <Controller
-                        control={control}
-                        name="avatar"
-                        render={({ field: { onChange, value } }) => (
-                            <>
-                                <ThemedText style={styles.avatar_label}>Avatar</ThemedText>
-                                <AvatarUploadField
-                                    size={200}
-                                    editable={true}
-                                    currentAvatarUrl={user?.avatar_url}
-                                    onImageSelected={onChange}
-                                />
-                            </>
-                        )}
-                    />
-                    {/* Name */}
-                    <FormTextField
-                        name="name"
-                        label="Name"
-                        control={control}
-                        error={errors.name} />
-                    {/* Email address */}
-                    <FormTextField
-                        name="email"
-                        label="Email"
-                        control={control}
-                        error={errors.email} />
-                </View>
-
-                {/* Submit button */}
-                <Button
-                    size="lg"
-                    color="white"
-                    label={"Save changes"}
-                    loading={isSubmitting}
-                    icon={<MaterialCommunityIcons name="content-save" size={24} />}
-                    onPress={handleSubmit(onSubmit)}
+        <FormLayout>
+            {/* Feedback */}
+            {isDone && (
+                <FeedbackMessage
+                    message="Your profile has been updated!"
+                    type="success" />
+            )}
+            {/* Register form */}
+            <View style={styles.form}>
+                {/* Avatar */}
+                <Controller
+                    control={control}
+                    name="avatar"
+                    render={({ field: { onChange, value } }) => (
+                        <>
+                            <ThemedText style={styles.avatar_label}>Avatar</ThemedText>
+                            <AvatarUploadField
+                                size={200}
+                                editable={true}
+                                currentAvatarUrl={user?.avatar_url}
+                                onImageSelected={onChange}
+                            />
+                        </>
+                    )}
                 />
-
-            </ScrollView>
-        </SafeAreaView>
+                {/* Name */}
+                <FormTextField
+                    name="name"
+                    label="Name"
+                    control={control}
+                    error={errors.name} />
+                {/* Email address */}
+                <FormTextField
+                    name="email"
+                    label="Email"
+                    control={control}
+                    error={errors.email} />
+            </View>
+            {/* Submit button */}
+            <Button
+                size="lg"
+                color="white"
+                label={"Save changes"}
+                loading={isSubmitting}
+                icon={<MaterialCommunityIcons name="content-save" size={24} />}
+                onPress={handleSubmit(onSubmit)}
+            />
+        </FormLayout>
     );
 };
 
