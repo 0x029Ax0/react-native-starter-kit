@@ -17,7 +17,7 @@ export const setUnauthorizedHandler = (handler: () => void) => {
 };
 
 export const http: AxiosInstance = axios.create({
-    baseURL: process.env.EXPO_PUBLIC_API_BASE_URL ?? "http://localhost/api",
+    baseURL: process.env.EXPO_PUBLIC_API_BASE_URL, // Validated at app startup
     timeout: 15_000,
     // withCredentials: true, // enable if you use cookies
 });

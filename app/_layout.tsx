@@ -1,4 +1,5 @@
 import { Providers } from '@/components/app';
+import { validateEnv } from '@/lib/config/validateEnv';
 import { useFonts } from 'expo-font';
 import { Slot } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
@@ -6,6 +7,9 @@ import { useEffect } from 'react';
 import 'react-native-reanimated';
 
 // ErrorBoundary is handled by Providers component using react-native-error-boundary
+
+// Validate environment variables before app starts
+validateEnv();
 
 SplashScreen.preventAutoHideAsync();
 
