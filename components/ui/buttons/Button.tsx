@@ -1,9 +1,10 @@
 import { ReactNode } from "react";
-import { GestureResponderEvent, Platform, Pressable, StyleSheet, Text, View } from "react-native";
+import { ActivityIndicator, GestureResponderEvent, Platform, Pressable, StyleSheet, Text, View } from "react-native";
 
 type ButtonProps = {
     onPress: (e: GestureResponderEvent) => void;
     disabled?: boolean;
+    loading?: boolean;
     label?: string;
     testID?: string;
     color: "black" | "white" | "blue" | "green" | "red";
@@ -69,18 +70,19 @@ const buttonSizes = {
     },
 };
 
-export const Button = ({ onPress, disabled = false, label = "Submit form", testID, color = "black", size = "md", icon }: ButtonProps) => {
+export const Button = ({ onPress, disabled = false, loading = false, label = "Submit form", testID, color = "black", size = "md", icon }: ButtonProps) => {
     const colors = buttonColors[color];
     const buttonSizeStyles = buttonSizes[size].buttonStyles;
     const textSizeStyles = buttonSizes[size].textStyles;
+    const isDisabled = disabled || loading;
 
     return (
         <Pressable
             onPress={onPress}
-            disabled={disabled}
+            disabled={isDisabled}
             accessibilityRole="button"
             accessibilityLabel={label}
-            android_ripple={{ 
+            android_ripple={{
                 color: "rgba(0,0,0,0.1)",
                 borderless: false
             }}
@@ -90,19 +92,27 @@ export const Button = ({ onPress, disabled = false, label = "Submit form", testI
                     backgroundColor: colors.backgroundColor,
                 },
                 buttonSizeStyles,
-                styles.base, 
+                styles.base,
                 pressed && styles.pressed,
-                disabled && styles.disabled,
+                isDisabled && styles.disabled,
             ]}
             testID={testID}
         >
             <View style={styles.row}>
-                {icon && (
-                    <Text style={[styles.icon ,{ color: colors.textColor }]}>
+                {loading ? (
+                    <ActivityIndicator
+                        size="small"
+                        color={colors.textColor}
+                        style={styles.spinner}
+                    />
+                ) : icon ? (
+                    <Text style={[styles.icon, { color: colors.textColor }]}>
                         {icon}
                     </Text>
-                )}
-                <Text style={[{ color: colors.textColor }, styles.text, textSizeStyles]}>{label}</Text>
+                ) : null}
+                <Text style={[{ color: colors.textColor }, styles.text, textSizeStyles]}>
+                    {loading ? "Loading..." : label}
+                </Text>
             </View>
         </Pressable>
     );
@@ -134,7 +144,9 @@ const styles = StyleSheet.create({
         alignItems: "center",
     },
     icon: {
-        
+        marginRight: 10,
+    },
+    spinner: {
         marginRight: 10,
     },
     text: {

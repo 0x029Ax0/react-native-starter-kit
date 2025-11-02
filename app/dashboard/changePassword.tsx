@@ -15,7 +15,7 @@ const ChangePasswordScreen = () => {
     const [isDone, setIsDone] = useState<boolean>(false);
     
     // Form definition
-    const { control, setValue, handleSubmit, formState: { errors } } = useForm<ChangePasswordInput>({
+    const { control, setValue, handleSubmit, formState: { errors, isSubmitting } } = useForm<ChangePasswordInput>({
         defaultValues: {
             password: '',
             new_password: '',
@@ -90,6 +90,7 @@ const ChangePasswordScreen = () => {
                             size="lg"
                             color="white"
                             label={"Change password"}
+                            loading={isSubmitting}
                             icon={<MaterialCommunityIcons name="content-save" size={24} />}
                             onPress={handleSubmit(onSubmit)}
                         />

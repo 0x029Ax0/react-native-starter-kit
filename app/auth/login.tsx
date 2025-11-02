@@ -21,7 +21,7 @@ const LoginScreen = () => {
     const { login, oauthRedirect } = useAuth();
 
     // Form definition
-    const { control, handleSubmit, formState: { errors }, setError } = useForm<LoginCredentials>({
+    const { control, handleSubmit, formState: { errors, isSubmitting }, setError } = useForm<LoginCredentials>({
         defaultValues: {
             email: "",
             password: "",
@@ -111,6 +111,7 @@ const LoginScreen = () => {
                             size="lg"
                             color="white"
                             label="Sign in"
+                            loading={isSubmitting}
                             testID="login-submit-button"
                             onPress={handleSubmit(onSubmit)}
                         />

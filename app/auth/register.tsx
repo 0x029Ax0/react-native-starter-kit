@@ -11,7 +11,7 @@ const RegisterScreen = () => {
     const { register } = useAuth();
 
     // Form definition
-    const { control, handleSubmit, formState: { errors }, setError } = useForm<RegisterInput>({
+    const { control, handleSubmit, formState: { errors, isSubmitting }, setError } = useForm<RegisterInput>({
         defaultValues: {
             name: '',
             email: '',
@@ -96,6 +96,7 @@ const RegisterScreen = () => {
                             size="lg"
                             color="white"
                             label="Create your account"
+                            loading={isSubmitting}
                             testID="register-submit-button"
                             onPress={handleSubmit(onSubmit)}
                         />

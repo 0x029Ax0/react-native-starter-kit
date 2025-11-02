@@ -17,7 +17,7 @@ const RecoverAccountScreen = () => {
     const [isDone, setIsDone] = useState<boolean>(false);
 
     // Form definition
-    const { control, handleSubmit, formState: { errors } } = useForm<RecoverAccountInput>({
+    const { control, handleSubmit, formState: { errors, isSubmitting } } = useForm<RecoverAccountInput>({
         defaultValues: {
             email: '',
         },
@@ -67,6 +67,7 @@ const RecoverAccountScreen = () => {
                                     size="lg"
                                     color="white"
                                     label={"Recover my account"}
+                                    loading={isSubmitting}
                                     icon={<MaterialIcons name="quick-contacts-mail" size={16} color="black" />}
                                     onPress={handleSubmit(onSubmit)}
                                 />

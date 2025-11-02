@@ -13,7 +13,7 @@ const DeleteAccountScreen = () => {
     const { deleteAccount } = useAuth();
 
     // Form definition
-    const { control, handleSubmit, formState: { errors } } = useForm<DeleteAccountInput>({
+    const { control, handleSubmit, formState: { errors, isSubmitting } } = useForm<DeleteAccountInput>({
         defaultValues: {
             password: "",
         },
@@ -61,6 +61,7 @@ const DeleteAccountScreen = () => {
                             size="lg"
                             color="red"
                             label={"Delete my account"}
+                            loading={isSubmitting}
                             icon={<FontAwesome6 name="trash-can" size={24} />}
                             onPress={handleSubmit(onSubmit)}
                         />

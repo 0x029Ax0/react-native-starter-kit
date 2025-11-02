@@ -14,7 +14,7 @@ const UpdateProfileScreen = () => {
     const [isDone, setIsDone] = useState<boolean>(false);
 
     // Form definition
-    const { control, handleSubmit, formState: { errors }, setError } = useForm<UpdateProfileInput>({
+    const { control, handleSubmit, formState: { errors, isSubmitting }, setError } = useForm<UpdateProfileInput>({
         defaultValues: {
             name: user?.name,
             email: user?.email,
@@ -104,6 +104,7 @@ const UpdateProfileScreen = () => {
                     size="lg"
                     color="white"
                     label={"Save changes"}
+                    loading={isSubmitting}
                     icon={<MaterialCommunityIcons name="content-save" size={24} />}
                     onPress={handleSubmit(onSubmit)}
                 />
