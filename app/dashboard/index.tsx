@@ -5,13 +5,16 @@ import { ScrollView, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import Logo from "@/assets/images/sharingan.png";
+import { useState } from "react";
+
+const ComponentWithErrors = () => {
+    throw new Error("This component just crashed, oh noes!");
+};
 
 const DashboardScreen = () => {
     const { user } = useAuth();
 
-    const throwError = () => {
-        throw new Error("This is a test exception!");
-    };
+    const [triggerError, setTriggerError] = useState<boolean>(false);
 
     return (
         <SafeAreaView style={styles.safeAreaContainer}>
@@ -32,10 +35,13 @@ const DashboardScreen = () => {
                 <View style={{ marginTop: 24 }}>
                     <Button 
                         color="white" 
-                        onPress={throwError} 
+                        onPress={() => setTriggerError(true)} 
                         label="Throw an error"
                     />
                 </View>
+                {triggerError && (
+                    <ComponentWithErrors />
+                )}
             </ScrollView>
         </SafeAreaView>
     );

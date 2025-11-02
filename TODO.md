@@ -6,18 +6,6 @@ This document lists potential improvements for the codebase, organized by priori
 
 ## 🔴 Critical Issues (Should Fix Before Production)
 
-### 1. QueryClient Memory Leak 
-- **Location**: `components/app/Providers.tsx:13`
-- **Issue**: `new QueryClient()` is created on every render
-- **Impact**: Memory leak, lost cache on re-renders
-- **Fix**: Move outside component or wrap in `useMemo`
-
-### 2. Dual Axios Interceptor Setup
-- **Location**: `lib/auth/AuthProvider.tsx:242-271` and `lib/http/AxiosInstance.tsx:26-49`
-- **Issue**: Both files add axios interceptors independently
-- **Impact**: Potential duplicate headers, race conditions, confusing flow
-- **Fix**: Consolidate to one location (preferably AxiosInstance)
-
 ### 3. Incomplete OAuth Implementation
 - **Location**: `app/auth/login.tsx:50-67`
 - **Issue**: Opens OAuth URL but no callback route to handle tokens

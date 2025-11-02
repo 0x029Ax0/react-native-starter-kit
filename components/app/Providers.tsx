@@ -5,26 +5,36 @@ import { AxiosProvider } from '@/lib/http';
 import { useColorScheme } from '@/lib/theme';
 import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import ErrorBoundary from 'react-native-error-boundary';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { ErrorFallback } from "../ui";
 
 export const Providers = ({ children }: PropsWithChildren) => {
     const colorScheme = useColorScheme();
     const queryClient = useMemo(() => new QueryClient(), []);
 
+    const logError = (error: Error, stacktrace: string) => {
+        console.debug("error boundary");
+        console.debug("- error:", error);
+        console.debug("- stacktrace:", stacktrace);
+    };
+
     return (
-        <GestureHandlerRootView style={{ flex: 1 }}>
-            <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-                <AxiosProvider>
-                    <QueryClientProvider client={queryClient}>
-                        <AuthProvider>
-                            <SafeAreaProvider>
-                                {children}
-                            </SafeAreaProvider>
-                        </AuthProvider>
-                    </QueryClientProvider>
-                </AxiosProvider>
-            </ThemeProvider>
-        </GestureHandlerRootView>
+        <ErrorBoundary FallbackComponent={ErrorFallback} onError={logError}>
+            <GestureHandlerRootView style={{ flex: 1 }}>
+                <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
+                    <AxiosProvider>
+                        <QueryClientProvider client={queryClient}>
+                            <AuthProvider>
+                                <SafeAreaProvider>
+                                    {children}
+                                </SafeAreaProvider>
+                            </AuthProvider>
+                        </QueryClientProvider>
+                    </AxiosProvider>
+                </ThemeProvider>
+            </GestureHandlerRootView>
+        </ErrorBoundary>
     );
 };

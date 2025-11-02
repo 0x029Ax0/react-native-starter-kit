@@ -98,7 +98,7 @@ export const Button = ({ onPress, disabled = false, label = "Submit form", testI
         >
             <View style={styles.row}>
                 {icon && (
-                    <Text style={{ color: colors.textColor }}>
+                    <Text style={[styles.icon ,{ color: colors.textColor }]}>
                         {icon}
                     </Text>
                 )}
@@ -133,10 +133,13 @@ const styles = StyleSheet.create({
         flexDirection: "row",
         alignItems: "center",
     },
+    icon: {
+        
+        marginRight: 10,
+    },
     text: {
         textAlign: "center",
         textTransform: "uppercase",
         fontWeight: "600", // must be a string in RN
-        marginLeft: 10,
     },
 });
