@@ -28,18 +28,6 @@ This document lists potential improvements for the codebase, organized by priori
 
 ## 🟡 High Priority (Quality & Reliability)
 
-### 7. Type Safety Gaps
-- **Location**: `lib/auth/AuthProvider.tsx:156`, `components/ui/forms/FormTextField.tsx`
-- **Issue**: Multiple `as any` casts
-- **Impact**: Lost type safety, potential runtime errors
-- **Fix**: Proper type definitions for FormData file objects
-
-### 8. Token Refresh Race Condition
-- **Location**: `lib/auth/AuthProvider.tsx:296-308`
-- **Issue**: Refresh fires immediately when token loads, no retry on network failure
-- **Impact**: Logs users out on transient network issues
-- **Fix**: Add retry logic, debounce, or only refresh when token is near expiry
-
 ### 9. No Loading States in Forms
 - **Issue**: Forms don't show loading state during submission
 - **Impact**: Poor UX, multiple submissions possible

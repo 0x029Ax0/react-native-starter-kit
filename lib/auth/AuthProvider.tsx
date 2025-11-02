@@ -1,6 +1,6 @@
 import { useRouter } from "expo-router";
 import * as SecureStore from 'expo-secure-store';
-import { PropsWithChildren, useCallback, useEffect, useMemo, useState } from "react";
+import { PropsWithChildren, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Platform } from "react-native";
 import { setAuthToken, setUnauthorizedHandler, useApiMutation } from "../http";
 import { FormDataFile } from "../types/formData";
@@ -33,6 +33,37 @@ import {
 } from "./types";
 import { getExtension, getMimeType, handleApiMutation } from "./utils";
 
+/**
+ * Retry utility with exponential backoff
+ * @param fn Function to retry
+ * @param maxAttempts Maximum number of attempts
+ * @param delayMs Initial delay in milliseconds
+ */
+async function retryWithBackoff<T>(
+    fn: () => Promise<T>,
+    maxAttempts: number = 3,
+    delayMs: number = 2000
+): Promise<T> {
+    let lastError: any;
+
+    for (let attempt = 0; attempt < maxAttempts; attempt++) {
+        try {
+            return await fn();
+        } catch (error) {
+            lastError = error;
+
+            // Don't retry on the last attempt
+            if (attempt < maxAttempts - 1) {
+                const waitTime = delayMs * Math.pow(2, attempt);
+                console.debug(`Retry attempt ${attempt + 1} failed, waiting ${waitTime}ms before retry...`);
+                await new Promise(resolve => setTimeout(resolve, waitTime));
+            }
+        }
+    }
+
+    throw lastError;
+}
+
 export const AuthProvider = ({ children }: PropsWithChildren) => {
     const router = useRouter();
 
@@ -40,6 +71,12 @@ export const AuthProvider = ({ children }: PropsWithChildren) => {
     const [state, setState] = useState<AuthState>("loading");
     const [user, setUser] = useState<User | null>(null);
     const [accessToken, setAccessToken] = useState<string | null>(null);
+
+    // Ref to track if refresh is in progress
+    const isRefreshing = useRef(false);
+
+    // Ref to track if component is mounted (prevent state updates after unmount)
+    const isMounted = useRef(true);
 
     // Secure storage for the accessToken
     const accessTokenStoreKey = process.env.EXPO_PUBLIC_API_TOKEN_STORAGE_KEY ?? "starter-kit-access-token";
@@ -261,20 +298,58 @@ export const AuthProvider = ({ children }: PropsWithChildren) => {
         }
     }, [router, logoutLocally]);
 
-    // Refresh once when access token becomes available
+    // Track component mount/unmount
+    useEffect(() => {
+        isMounted.current = true;
+        return () => {
+            isMounted.current = false;
+        };
+    }, []);
+
+    // Refresh once when access token becomes available (bootstrap only)
     useEffect(() => {
         if (!accessToken) return;
-        refresh()
+
+        // Skip refresh if we already have user data (happens after login/register)
+        if (user) return;
+
+        // Prevent multiple simultaneous refresh attempts
+        if (isRefreshing.current) return;
+        isRefreshing.current = true;
+
+        // Retry refresh with exponential backoff
+        retryWithBackoff(() => refresh(), 3, 2000)
             .then((result) => {
+                if (!isMounted.current) return;
+
                 if (result.status === "success") {
-                    router.replace('/dashboard')
+                    router.replace('/dashboard');
                 }
             })
-            .catch(() => {
-                setAccessToken(null);
-                router.replace('/auth/login');
+            .catch((error) => {
+                if (!isMounted.current) return;
+
+                console.debug("Token refresh failed after retries:", error);
+
+                // Only logout on authentication errors (401/403), not network errors
+                // Check if error has a response with 401 or 403 status
+                const statusCode = error?.response?.status || error?.status;
+                const isAuthError = statusCode === 401 || statusCode === 403;
+
+                if (isAuthError) {
+                    console.debug("Authentication error detected, logging out");
+                    setAccessToken(null);
+                    router.replace('/auth/login');
+                } else {
+                    // For network errors, keep user logged in but set state appropriately
+                    console.debug("Network/server error - keeping user logged in");
+                    setState("authenticated");
+                }
             })
-    }, [accessToken]);
+            .finally(() => {
+                isRefreshing.current = false;
+            });
+    }, [accessToken, user, refresh, router]);
 
     // Compose the object we're making available through the provider
     const value = useMemo(() => ({
