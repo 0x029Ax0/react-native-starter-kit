@@ -38,7 +38,12 @@ http.interceptors.response.use(
     (res) => res,
     async (error) => {
         const status = error.response?.status;
-        const message = error.response?.data?.message ?? error.message ?? 'Network error';
+        let message = error.response?.data?.message ?? error.message ?? 'Network error';
+
+        // Handle timeout errors with clear message
+        if (error.code === 'ECONNABORTED' || error.message?.includes('timeout')) {
+            message = 'Request timed out after 15 seconds. Please check your connection and try again.';
+        }
 
         // Handle 401 Unauthorized
         if (status === 401 && onUnauthorized) {

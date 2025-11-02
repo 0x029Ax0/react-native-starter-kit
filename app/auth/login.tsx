@@ -7,6 +7,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { Image } from 'expo-image';
 import { useRouter } from 'expo-router';
 import * as WebBrowser from 'expo-web-browser';
+import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import {
     StyleSheet,
@@ -18,6 +19,7 @@ import logo from '@/assets/images/sharingan.png';
 const LoginScreen = () => {
     const router = useRouter();
     const { login, oauthRedirect } = useAuth();
+    const [oauthLoading, setOauthLoading] = useState<'google' | 'github' | null>(null);
 
     // Form definition
     const { control, handleSubmit, formState: { errors, isSubmitting }, setError } = useForm<LoginCredentials>({
@@ -47,6 +49,7 @@ const LoginScreen = () => {
     // OAuth: google click handler
     const handleClickGoogle = async () => {
         try {
+            setOauthLoading('google');
             const oauthResult: OAuthRedirectResponse = await oauthRedirect({ provider: "google" });
             logger.debug("clicked google, result:", oauthResult);
             if (oauthResult.status === "success") {
@@ -55,13 +58,22 @@ const LoginScreen = () => {
             }
         } catch (error) {
             logger.debug("google oauth redirect error:", error);
+        } finally {
+            setOauthLoading(null);
         }
     };
 
     // OAuth: github click handler
     const handleClickGithub = async () => {
-        const result = await oauthRedirect({ provider: "github" });
-        logger.debug("clicked github, result:", result);
+        try {
+            setOauthLoading('github');
+            const result = await oauthRedirect({ provider: "github" });
+            logger.debug("clicked github, result:", result);
+        } catch (error) {
+            logger.debug("github oauth redirect error:", error);
+        } finally {
+            setOauthLoading(null);
+        }
     };
     
     return (
@@ -108,17 +120,21 @@ const LoginScreen = () => {
                 {/* OAuth options */}
                 <View style={styles.oauthWrapper}>
                     <View style={{ flex: 1 }}>
-                        <OutlineButton 
-                            label="Google" 
-                            onPress={handleClickGoogle} 
-                            icon={<AntDesign name="google" size={24} />} 
+                        <OutlineButton
+                            label="Google"
+                            onPress={handleClickGoogle}
+                            loading={oauthLoading === 'google'}
+                            disabled={oauthLoading !== null}
+                            icon={<AntDesign name="google" size={24} />}
                         />
                     </View>
                     <View style={{ flex: 1 }}>
-                        <OutlineButton 
+                        <OutlineButton
                             label="Github"
-                            onPress={handleClickGithub} 
-                            icon={<AntDesign name="github" size={24} />} 
+                            onPress={handleClickGithub}
+                            loading={oauthLoading === 'github'}
+                            disabled={oauthLoading !== null}
+                            icon={<AntDesign name="github" size={24} />}
                         />
                     </View>
                 </View>

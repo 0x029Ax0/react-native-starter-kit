@@ -3,7 +3,6 @@ import * as SecureStore from 'expo-secure-store';
 import { PropsWithChildren, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Platform } from "react-native";
 import { setAuthToken, setUnauthorizedHandler, useApiMutation } from "../http";
-import { FormDataFile } from "../types/formData";
 import { logger } from "../utils/logger";
 import { AuthContext, AuthState } from "./AuthContext";
 import {
@@ -11,6 +10,7 @@ import {
     ChangePasswordResponse,
     DeleteAccountInput,
     DeleteAccountResponse,
+    FormDataFile,
     LoginApiResponse,
     LoginCredentials,
     LoginResponse,
@@ -32,6 +32,7 @@ import {
     UpdateProfileResponse,
     User
 } from "./types";
+
 import { getExtension, getMimeType, handleApiMutation, retryWithBackoff } from "./utils";
 
 

@@ -3,8 +3,8 @@
 This document contains a comprehensive analysis of bugs, security vulnerabilities, UX/UI problems, architectural issues, and improvement opportunities identified in the codebase.
 
 **Analysis Date**: 2025-11-02
-**Total Issues Identified**: 27
-**Critical**: 7 | **High**: 4 | **Medium**: 10 | **Low**: 6
+**Total Issues Identified**: 23
+**Critical**: 7 | **High**: 2 | **Medium**: 8 | **Low**: 6
 
 ---
 
@@ -170,52 +170,6 @@ if (result.assets?.[0]) {
 
 ---
 
-### -- 7. Token Persists in Storage on Logout
-
-**Severity**: HIGH
-**Category**: Security
-**Location**: `lib/auth/AuthProvider.tsx:337-342`
-
-**Issue**:
-When refresh fails with auth error, token cleared from state but not from SecureStore/localStorage.
-
-```tsx
-if (isAuthError) {
-    console.debug("Authentication error detected, logging out");
-    setAccessToken(null);  // Only clears state
-    // Should also delete from SecureStore!
-}
-```
-
-**Impact**:
-- Old token lingers in device storage
-- App restart could use invalid token
-- Security risk if device compromised
-
-**Fix**:
-```tsx
-const clearAccessToken = useCallback(async () => {
-    try {
-        if (Platform.OS === "web") {
-            localStorage.removeItem(accessTokenStoreKey);
-        } else {
-            await SecureStore.deleteItemAsync(accessTokenStoreKey);
-        }
-    } catch (error) {
-        console.warn("Failed to clear token from storage:", error);
-    }
-    setAccessToken(null);
-    setAuthToken(null);
-}, [accessTokenStoreKey]);
-
-// Use in logout and auth errors
-if (isAuthError) {
-    await clearAccessToken();
-}
-```
-
----
-
 ## 🟠 High Severity Issues
 
 ### 8. Console.debug Calls in Production
@@ -255,71 +209,6 @@ export const logger = {
 // Replace all console.debug
 - console.debug("recover account mutated succesfully", response);
 + logger.debug("recover account mutated succesfully", response);
-```
-
----
-
-### -- 10. Race Condition in Auth Initialization
-
-**Severity**: HIGH
-**Category**: Architecture
-**Location**: `lib/auth/AuthProvider.tsx:280-354`
-
-**Issue**:
-Multiple useEffects updating auth state can race, causing auth state flashing or multiple refresh calls.
-
-```tsx
-// Effect 1: Get token from storage (runs once)
-useEffect(() => {
-    getAccessToken().then(token => {
-        setAccessToken(token);  // Triggers Effect 2
-    });
-}, []);
-
-// Effect 2: Refresh when token available (runs on token change)
-useEffect(() => {
-    if (!accessToken) return;
-    // Could run multiple times if state updates rapidly
-    retryWithBackoff(() => refresh(), 3, 2000)
-}, [accessToken, user, refresh]);
-```
-
-**Impact**:
-- Multiple unnecessary refresh API calls
-- Flash of wrong auth state (guest → authenticated → guest)
-- Confusing user experience
-
-**Fix**:
-```tsx
-// Use single initialization effect with proper guards
-useEffect(() => {
-    let cancelled = false;
-
-    const initialize = async () => {
-        try {
-            const token = await getAccessToken();
-
-            if (cancelled) return;
-
-            if (token) {
-                setAccessToken(token);
-                // Refresh will be triggered by separate effect
-            } else {
-                setState("guest");
-            }
-        } catch (error) {
-            if (!cancelled) {
-                setState("guest");
-            }
-        }
-    };
-
-    initialize();
-
-    return () => {
-        cancelled = true;
-    };
-}, []); // Only run once on mount
 ```
 
 ---
@@ -405,61 +294,6 @@ if (Platform.OS === "web") {
 ---
 
 ## 🟡 Medium Severity Issues
-
-### -- 13. No Timeout Error Message Clarity
-
-**Severity**: MEDIUM
-**Category**: UX
-**Location**: `lib/http/AxiosInstance.tsx:21`
-
-**Issue**:
-15-second timeout returns generic error without explaining it's a timeout.
-
-```tsx
-timeout: 15_000,  // Silent timeout
-```
-
-**Impact**:
-- Users don't know if it's network issue or backend issue
-- No guidance on what to do
-
-**Fix**:
-```tsx
-// In axios interceptor
-axios.interceptors.response.use(
-    response => response,
-    error => {
-        if (error.code === 'ECONNABORTED') {
-            error.message = 'Request timed out after 15 seconds. Please try again.';
-        }
-        throw error;
-    }
-);
-```
-
----
-
-### -- 15. Missing Loading State Visibility
-
-**Severity**: MEDIUM
-**Category**: UX
-**Location**: OAuth buttons in `app/auth/login.tsx`
-
-**Issue**:
-OAuth buttons don't show loading state when clicked.
-
-**Fix**:
-```tsx
-const [oauthLoading, setOauthLoading] = useState<'google' | 'github' | null>(null);
-
-<Button
-    onPress={handleClickGoogle}
-    loading={oauthLoading === 'google'}
-    disabled={oauthLoading !== null}
-/>
-```
-
----
 
 ### 19. Missing Accessibility Labels
 

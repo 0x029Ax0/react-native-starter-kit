@@ -1,31 +1,41 @@
+import { triggerLightHaptic } from "@/lib/utils/haptics";
 import { useThemeColor } from "@/lib/theme";
-import { GestureResponderEvent, Platform, Pressable, StyleSheet, Text, View } from "react-native";
+import { ActivityIndicator, GestureResponderEvent, Platform, Pressable, StyleSheet, Text, View } from "react-native";
 
 type OutlineButtonProps = {
     onPress: (e: GestureResponderEvent) => void;
     disabled?: boolean;
+    loading?: boolean;
     label?: string;
     testID?: string;
     icon?: any;
 };
 
-export const OutlineButton = ({ 
-    onPress, 
-    disabled = false, 
-    label = "Submit form", 
-    testID, 
+export const OutlineButton = ({
+    onPress,
+    disabled = false,
+    loading = false,
+    label = "Submit form",
+    testID,
     icon,
 }: OutlineButtonProps) => {
     const outlineColor = useThemeColor({ light: "#000", dark: "#fff" }, "background");
     const textColor = useThemeColor({ light: "#000", dark: "#fff" }, "text");
+    const isDisabled = disabled || loading;
+
+    const handlePress = (e: GestureResponderEvent) => {
+        // Trigger haptic feedback on button press
+        triggerLightHaptic();
+        onPress(e);
+    };
 
     return (
         <Pressable
-            onPress={onPress}
-            disabled={disabled}
+            onPress={handlePress}
+            disabled={isDisabled}
             accessibilityRole="button"
             accessibilityLabel={label}
-            android_ripple={{ 
+            android_ripple={{
                 color: "rgba(0,0,0,0.1)",
                 borderless: false
             }}
@@ -35,19 +45,27 @@ export const OutlineButton = ({
                     borderWidth: 1,
                     borderColor: outlineColor,
                 },
-                styles.base, 
+                styles.base,
                 pressed && styles.pressed,
-                disabled && styles.disabled,
+                isDisabled && styles.disabled,
             ]}
             testID={testID}
         >
             <View style={styles.row}>
-                {icon && (
+                {loading ? (
+                    <ActivityIndicator
+                        size="small"
+                        color={textColor}
+                        style={styles.spinner}
+                    />
+                ) : icon ? (
                     <Text style={{ color: textColor }}>
                         {icon}
                     </Text>
-                )}
-                <Text style={[{ color: textColor }, styles.text]}>{label}</Text>
+                ) : null}
+                <Text style={[{ color: textColor }, styles.text]}>
+                    {loading ? "Loading..." : label}
+                </Text>
             </View>
         </Pressable>
     );
@@ -78,6 +96,9 @@ const styles = StyleSheet.create({
     row: {
         flexDirection: "row",
         alignItems: "center",
+    },
+    spinner: {
+        marginRight: 10,
     },
     text: {
         fontFamily: "FiraCode",
