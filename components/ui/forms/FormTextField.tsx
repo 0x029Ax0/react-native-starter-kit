@@ -10,7 +10,7 @@ import { StyleSheet, Text, TextInput, TextInputProps, View } from 'react-native'
  */
 
 type FormTextFieldProps<TFieldValues extends FieldValues> = {
-    name: string;
+    name: FieldPath<TFieldValues>;
     control: Control<TFieldValues>;
     rules?: RegisterOptions<TFieldValues, FieldPath<TFieldValues>>;
     label?: string;
@@ -32,10 +32,10 @@ export function FormTextField<TFieldValues extends FieldValues = FieldValues>({
     
     return (
         <Controller
-            name={name as any}
+            name={name}
             control={control}
-            rules={rules as any}
-            defaultValue={defaultValue as any}
+            rules={rules}
+            defaultValue={defaultValue}
             render={({ field: { onChange, onBlur, value }, fieldState: { error } }) => (
                 <View style={styles.root}>
                     {label ? (
@@ -44,7 +44,7 @@ export function FormTextField<TFieldValues extends FieldValues = FieldValues>({
 
                     <TextInput
                         style={[styles.input, error && styles.inputError]}
-                        value={(value ?? '') as unknown as string}
+                        value={String(value ?? '')}
                         onChangeText={onChange}
                         onBlur={onBlur}
                         selectionColor="#fff"

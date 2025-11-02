@@ -3,6 +3,7 @@ import * as SecureStore from 'expo-secure-store';
 import { PropsWithChildren, useCallback, useEffect, useMemo, useState } from "react";
 import { Platform } from "react-native";
 import { setAuthToken, setUnauthorizedHandler, useApiMutation } from "../http";
+import { FormDataFile } from "../types/formData";
 import { AuthContext, AuthState } from "./AuthContext";
 import {
     ChangePasswordInput,
@@ -143,11 +144,12 @@ export const AuthProvider = ({ children }: PropsWithChildren) => {
         if (input.avatar) {
             const mimeType = getMimeType(input.avatar);
             const extension = getExtension(input.avatar);
-            formData.append('avatar', {
+            const avatarFile: FormDataFile = {
                 uri: input.avatar,
                 type: mimeType,
                 name: 'avatar.' + extension,
-            } as any);
+            };
+            formData.append('avatar', avatarFile as unknown as Blob);
         }
         return handleApiMutation(updateProfileMutation, formData, async (response) => {
             console.debug("update profile mutated succesfully", response);

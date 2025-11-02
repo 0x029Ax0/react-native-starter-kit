@@ -28,11 +28,6 @@ This document lists potential improvements for the codebase, organized by priori
 
 ## 🟡 High Priority (Quality & Reliability)
 
-### 6. Missing Error Boundary
-- **Issue**: No error boundary to catch React errors
-- **Impact**: White screen crashes with no user feedback
-- **Fix**: Add ErrorBoundary component wrapping app
-
 ### 7. Type Safety Gaps
 - **Location**: `lib/auth/AuthProvider.tsx:156`, `components/ui/forms/FormTextField.tsx`
 - **Issue**: Multiple `as any` casts
