@@ -1,6 +1,7 @@
 import { useAuth } from "@/lib/auth";
+import { useMinimumLoadingTime } from "@/lib/hooks/useMinimumLoadingTime";
 import { Image } from "expo-image";
-import { ScrollView, StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from "react-native-safe-area-context";
 
 type DetailValue = {
@@ -9,7 +10,8 @@ type DetailValue = {
 };
 
 const ProfileScreen = () => {
-    const { user } = useAuth();
+    const { user, state } = useAuth();
+    const shouldShowLoading = useMinimumLoadingTime(state === "loading");
 
     // Details to render
     const details: DetailValue[] = [
@@ -35,6 +37,18 @@ const ProfileScreen = () => {
         }
     ];
 
+    // Show loading indicator while data is loading
+    if (shouldShowLoading) {
+        return (
+            <SafeAreaView style={styles.safeAreaContainer}>
+                <View style={styles.loadingContainer}>
+                    <ActivityIndicator size="large" color="#ffffff" />
+                    <Text style={styles.loadingText}>Loading profile...</Text>
+                </View>
+            </SafeAreaView>
+        );
+    }
+
     return (
         <SafeAreaView style={styles.safeAreaContainer}>
             <ScrollView
@@ -42,10 +56,10 @@ const ProfileScreen = () => {
                 contentContainerStyle={styles.scrollContent}
                 keyboardShouldPersistTaps="handled"
                 automaticallyAdjustKeyboardInsets>
-            
+
                 {/* Avatar */}
                 <View style={[styles.avatar_wrapper, {}]}>
-                    <Image 
+                    <Image
                         style={styles.avatar}
                         source={{ uri: user?.avatar_url }}
                         contentFit="cover"
@@ -58,7 +72,7 @@ const ProfileScreen = () => {
                 {/* Details */}
                 <View style={styles.details}>
                     {details.map((item, index) => (
-                        <View 
+                        <View
                             key={index}
                             style={[
                                 styles.detail,
@@ -80,6 +94,16 @@ export default ProfileScreen;
 const styles = StyleSheet.create({
     safeAreaContainer: {
         flex: 1,
+    },
+    loadingContainer: {
+        flex: 1,
+        justifyContent: "center",
+        alignItems: "center",
+        gap: 16,
+    },
+    loadingText: {
+        color: "#ffffff",
+        fontSize: 16,
     },
     scrollContainer: {
         flex: 1,

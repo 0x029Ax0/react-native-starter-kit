@@ -32,12 +32,6 @@ This document lists potential improvements for the codebase, organized by priori
 - **Impact**: Leaks implementation details, clutters logs
 - **Fix**: Replace with proper logging service, remove in production
 
-### 15. Missing Loading States in Screens
-- **Location**: `app/dashboard/profile.tsx`, `app/dashboard/index.tsx`
-- **Issue**: No loading indicators for data fetching
-- **Impact**: Blank screens while loading
-- **Fix**: Add skeleton screens or loading indicators
-
 ---
 
 ## 🔵 Low Priority (Nice to Have)

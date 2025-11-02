@@ -1,7 +1,8 @@
 import { Button, ThemedText } from "@/components/ui";
 import { useAuth } from "@/lib/auth";
+import { useMinimumLoadingTime } from "@/lib/hooks/useMinimumLoadingTime";
 import { Image } from 'expo-image';
-import { ScrollView, StyleSheet, View } from 'react-native';
+import { ActivityIndicator, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import Logo from "@/assets/images/sharingan.png";
@@ -12,9 +13,22 @@ const ComponentWithErrors = () => {
 };
 
 const DashboardScreen = () => {
-    const { user } = useAuth();
+    const { user, state } = useAuth();
+    const shouldShowLoading = useMinimumLoadingTime(state === "loading");
 
     const [triggerError, setTriggerError] = useState<boolean>(false);
+
+    // Show loading indicator while data is loading
+    if (shouldShowLoading) {
+        return (
+            <SafeAreaView style={styles.safeAreaContainer}>
+                <View style={styles.loadingContainer}>
+                    <ActivityIndicator size="large" color="#ffffff" />
+                    <Text style={styles.loadingText}>Loading dashboard...</Text>
+                </View>
+            </SafeAreaView>
+        );
+    }
 
     return (
         <SafeAreaView style={styles.safeAreaContainer}>
@@ -52,6 +66,16 @@ export default DashboardScreen;
 const styles = StyleSheet.create({
     safeAreaContainer: {
         flex: 1,
+    },
+    loadingContainer: {
+        flex: 1,
+        justifyContent: "center",
+        alignItems: "center",
+        gap: 16,
+    },
+    loadingText: {
+        color: "#ffffff",
+        fontSize: 16,
     },
     scrollContainer: {
         flex: 1,

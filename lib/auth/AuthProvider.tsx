@@ -284,11 +284,15 @@ export const AuthProvider = ({ children }: PropsWithChildren) => {
                 if (token) {
                     setAccessToken(token);
                 } else {
-                    router.replace("/auth");
+                    // No token - user is a guest
+                    // app/index.tsx will handle redirect to /auth
+                    setState("guest");
                 }
             })
             .catch((error) => {
                 console.debug("get access token error:", error);
+                // On error, assume guest state
+                setState("guest");
             });
         // Setup unauthorized handler for axios
         setUnauthorizedHandler(logoutLocally);
@@ -296,7 +300,7 @@ export const AuthProvider = ({ children }: PropsWithChildren) => {
         return () => {
             setUnauthorizedHandler(() => {});
         }
-    }, [router, logoutLocally]);
+    }, [logoutLocally]);
 
     // Track component mount/unmount
     useEffect(() => {
@@ -321,10 +325,8 @@ export const AuthProvider = ({ children }: PropsWithChildren) => {
         retryWithBackoff(() => refresh(), 3, 2000)
             .then((result) => {
                 if (!isMounted.current) return;
-
-                if (result.status === "success") {
-                    router.replace('/dashboard');
-                }
+                // Auth state is updated by refresh() - no redirect needed
+                // app/index.tsx will handle routing based on state
             })
             .catch((error) => {
                 if (!isMounted.current) return;
@@ -339,7 +341,7 @@ export const AuthProvider = ({ children }: PropsWithChildren) => {
                 if (isAuthError) {
                     console.debug("Authentication error detected, logging out");
                     setAccessToken(null);
-                    router.replace('/auth/login');
+                    // app/index.tsx will handle redirect to /auth
                 } else {
                     // For network errors, keep user logged in but set state appropriately
                     console.debug("Network/server error - keeping user logged in");
@@ -349,7 +351,7 @@ export const AuthProvider = ({ children }: PropsWithChildren) => {
             .finally(() => {
                 isRefreshing.current = false;
             });
-    }, [accessToken, user, refresh, router]);
+    }, [accessToken, user, refresh]);
 
     // Compose the object we're making available through the provider
     const value = useMemo(() => ({
