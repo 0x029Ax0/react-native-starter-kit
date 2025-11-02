@@ -3,8 +3,8 @@
 This document contains a comprehensive analysis of bugs, security vulnerabilities, UX/UI problems, architectural issues, and improvement opportunities identified in the codebase.
 
 **Analysis Date**: 2025-11-02
-**Total Issues Identified**: 30
-**Critical**: 7 | **High**: 4 | **Medium**: 12 | **Low**: 7
+**Total Issues Identified**: 27
+**Critical**: 7 | **High**: 4 | **Medium**: 10 | **Low**: 6
 
 ---
 
@@ -170,7 +170,7 @@ if (result.assets?.[0]) {
 
 ---
 
-### 7. Token Persists in Storage on Logout
+### -- 7. Token Persists in Storage on Logout
 
 **Severity**: HIGH
 **Category**: Security
@@ -259,7 +259,7 @@ export const logger = {
 
 ---
 
-### 10. Race Condition in Auth Initialization
+### -- 10. Race Condition in Auth Initialization
 
 **Severity**: HIGH
 **Category**: Architecture
@@ -406,7 +406,7 @@ if (Platform.OS === "web") {
 
 ## 🟡 Medium Severity Issues
 
-### 13. No Timeout Error Message Clarity
+### -- 13. No Timeout Error Message Clarity
 
 **Severity**: MEDIUM
 **Category**: UX
@@ -439,7 +439,7 @@ axios.interceptors.response.use(
 
 ---
 
-### 15. Missing Loading State Visibility
+### -- 15. Missing Loading State Visibility
 
 **Severity**: MEDIUM
 **Category**: UX
@@ -458,100 +458,6 @@ const [oauthLoading, setOauthLoading] = useState<'google' | 'github' | null>(nul
     disabled={oauthLoading !== null}
 />
 ```
-
----
-
-### 16. No Success Feedback on Destructive Operations
-
-**Severity**: MEDIUM
-**Category**: UX
-**Location**: `app/dashboard/deleteAccount.tsx:27`
-
-**Issue**:
-Account deletion succeeds silently with just a redirect.
-
-**Impact**:
-- User doesn't get confirmation
-- Very destructive action needs clear feedback
-
-**Fix**:
-```tsx
-const onSubmit = async (formData: DeleteAccountInput) => {
-    Alert.alert(
-        'Delete Account?',
-        'This action cannot be undone. Are you sure?',
-        [
-            { text: 'Cancel', style: 'cancel' },
-            {
-                text: 'Delete',
-                style: 'destructive',
-                onPress: async () => {
-                    const result = await deleteAccount(formData);
-                    if (result.status === 'success') {
-                        Alert.alert('Account Deleted', 'Your account has been permanently deleted.');
-                    }
-                }
-            }
-        ]
-    );
-};
-```
-
----
-
-### 17. useMinimumLoadingTime Memory Leak Potential
-
-**Severity**: MEDIUM
-**Category**: Performance / Bug
-**Location**: `lib/hooks/useMinimumLoadingTime.ts:34-72`
-
-**Issue**:
-Dependency array includes state that causes effect to run too frequently.
-
-```tsx
-useEffect(() => {
-    // ... timer setup
-    return () => {
-        if (showTimer) clearTimeout(showTimer);
-        if (hideTimer) clearTimeout(hideTimer);
-    };
-}, [isLoading, shouldShow, showStartTime, showDelay, minDuration]);  // Too many deps
-```
-
-**Fix**:
-```tsx
-useEffect(() => {
-    let showTimer: ReturnType<typeof setTimeout> | null = null;
-    let hideTimer: ReturnType<typeof setTimeout> | null = null;
-
-    if (isLoading) {
-        showTimer = setTimeout(() => {
-            setShouldShow(true);
-            setShowStartTime(Date.now());
-        }, showDelay);
-    } else if (shouldShow && showStartTime) {
-        const elapsed = Date.now() - showStartTime;
-        const remaining = minDuration - elapsed;
-
-        if (remaining > 0) {
-            hideTimer = setTimeout(() => {
-                setShouldShow(false);
-                setShowStartTime(null);
-            }, remaining);
-        } else {
-            setShouldShow(false);
-            setShowStartTime(null);
-        }
-    }
-
-    return () => {
-        if (showTimer) clearTimeout(showTimer);
-        if (hideTimer) clearTimeout(hideTimer);
-    };
-}, [isLoading, showDelay, minDuration]);  // Remove shouldShow and showStartTime
-```
-
----
 
 ---
 
@@ -696,28 +602,6 @@ No `textContentType` for iOS autofill.
     textContentType="password"
     autoComplete="current-password"
 />
-```
-
----
-
-### - 30. No Image Compression on Upload
-
-**Severity**: LOW
-**Category**: Performance
-**Location**: `components/ui/forms/AvatarUploadField.tsx`
-
-**Issue**:
-Images uploaded at full quality.
-
-**Fix**:
-```tsx
-import * as ImageManipulator from 'expo-image-manipulator';
-
-const compressedImage = await ImageManipulator.manipulateAsync(
-    result.assets[0].uri,
-    [{ resize: { width: 500 } }],  // Resize to 500px width
-    { compress: 0.7, format: ImageManipulator.SaveFormat.JPEG }
-);
 ```
 
 ---

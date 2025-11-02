@@ -4,7 +4,8 @@
       "Bash(npm run lint:*)",
       "Bash(npx tsc:*)",
       "Bash(npx expo prebuild:*)",
-      "Bash(tree:*)"
+      "Bash(tree:*)",
+      "Bash(npm install:*)"
     ],
     "deny": [],
     "ask": []

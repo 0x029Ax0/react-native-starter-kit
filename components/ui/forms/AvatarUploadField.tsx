@@ -1,5 +1,6 @@
 import { Ionicons } from '@expo/vector-icons';
 import { Image } from 'expo-image';
+import * as ImageManipulator from 'expo-image-manipulator';
 import * as ImagePicker from 'expo-image-picker';
 import { useState } from 'react';
 import {
@@ -65,6 +66,25 @@ export const AvatarUploadField = ({
         return true;
     };
 
+    /**
+     * Compresses and resizes an image to reduce file size
+     * @param uri The URI of the image to compress
+     * @returns The URI of the compressed image
+     */
+    const compressImage = async (uri: string): Promise<string> => {
+        try {
+            const manipulatedImage = await ImageManipulator.manipulateAsync(
+                uri,
+                [{ resize: { width: 500 } }], // Resize to 500px width, maintaining aspect ratio
+                { compress: 0.7, format: ImageManipulator.SaveFormat.JPEG }
+            );
+            return manipulatedImage.uri;
+        } catch (error) {
+            console.warn('Image compression failed, using original:', error);
+            return uri; // Fallback to original if compression fails
+        }
+    };
+
     const requestPermission = async () => {
         if (Platform.OS !== 'web') {
             const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
@@ -100,8 +120,11 @@ export const AvatarUploadField = ({
                 return;
             }
 
-            setSelectedImage(asset.uri);
-            onImageSelected?.(asset.uri);
+            // Compress the image before using it
+            const compressedUri = await compressImage(asset.uri);
+
+            setSelectedImage(compressedUri);
+            onImageSelected?.(compressedUri);
         }
     };
 
@@ -131,8 +154,11 @@ export const AvatarUploadField = ({
                 return;
             }
 
-            setSelectedImage(asset.uri);
-            onImageSelected?.(asset.uri);
+            // Compress the image before using it
+            const compressedUri = await compressImage(asset.uri);
+
+            setSelectedImage(compressedUri);
+            onImageSelected?.(compressedUri);
         }
     };
 

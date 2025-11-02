@@ -4,7 +4,7 @@ import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "expo-router";
 import { useForm } from "react-hook-form";
-import { StyleSheet, View } from 'react-native';
+import { Alert, StyleSheet, View } from 'react-native';
 
 
 const DeleteAccountScreen = () => {
@@ -19,14 +19,39 @@ const DeleteAccountScreen = () => {
         resolver: zodResolver(deleteAccountSchema),
     });
 
-    // Submit form handler
+    // Submit form handler with confirmation
     const onSubmit = async (input: DeleteAccountInput) => {
-        const result = await deleteAccount(input);
-        if (result.status === "success") {
-            router.replace("/auth");
-        } else {
-            handleFormErrors(result, { setError, fallbackField: "password" });
-        }
+        Alert.alert(
+            'Delete Account?',
+            'This action cannot be undone. All your data will be permanently deleted. Are you absolutely sure?',
+            [
+                {
+                    text: 'Cancel',
+                    style: 'cancel',
+                },
+                {
+                    text: 'Delete',
+                    style: 'destructive',
+                    onPress: async () => {
+                        const result = await deleteAccount(input);
+                        if (result.status === "success") {
+                            Alert.alert(
+                                'Account Deleted',
+                                'Your account has been permanently deleted.',
+                                [
+                                    {
+                                        text: 'OK',
+                                        onPress: () => router.replace("/auth"),
+                                    },
+                                ]
+                            );
+                        } else {
+                            handleFormErrors(result, { setError, fallbackField: "password" });
+                        }
+                    },
+                },
+            ]
+        );
     }
 
     return (

@@ -48,28 +48,36 @@ export function useMinimumLoadingTime(
                 clearTimeout(showTimer);
             }
 
-            if (shouldShow && showStartTime) {
-                // We were showing loading - ensure minimum duration
-                const elapsed = Date.now() - showStartTime;
-                const remaining = minDuration - elapsed;
+            setShouldShow((currentShouldShow) => {
+                if (currentShouldShow) {
+                    setShowStartTime((currentShowStartTime) => {
+                        if (currentShowStartTime) {
+                            // We were showing loading - ensure minimum duration
+                            const elapsed = Date.now() - currentShowStartTime;
+                            const remaining = minDuration - elapsed;
 
-                if (remaining > 0) {
-                    hideTimer = setTimeout(() => {
-                        setShouldShow(false);
-                        setShowStartTime(null);
-                    }, remaining);
-                } else {
-                    setShouldShow(false);
-                    setShowStartTime(null);
+                            if (remaining > 0) {
+                                hideTimer = setTimeout(() => {
+                                    setShouldShow(false);
+                                    setShowStartTime(null);
+                                }, remaining);
+                            } else {
+                                setShouldShow(false);
+                                setShowStartTime(null);
+                            }
+                        }
+                        return currentShowStartTime;
+                    });
                 }
-            }
+                return currentShouldShow;
+            });
         }
 
         return () => {
             if (showTimer) clearTimeout(showTimer);
             if (hideTimer) clearTimeout(hideTimer);
         };
-    }, [isLoading, shouldShow, showStartTime, showDelay, minDuration]);
+    }, [isLoading, showDelay, minDuration]);
 
     return shouldShow;
 }
