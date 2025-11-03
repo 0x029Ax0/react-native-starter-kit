@@ -4,6 +4,7 @@ import AntDesign from '@expo/vector-icons/AntDesign';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import FontAwesome5 from '@expo/vector-icons/FontAwesome5';
 import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
+import { getFocusedRouteNameFromRoute } from '@react-navigation/native';
 import { Drawer } from 'expo-router/drawer';
 import { View } from 'react-native';
 import 'react-native-reanimated';
@@ -20,37 +21,38 @@ const RootLayout = () => {
         <Drawer 
             drawerContent={CustomDrawerContent} 
             screenOptions={{
-                drawerContentStyle: {
-                },
-                drawerStyle: {
-                    backgroundColor: drawerBackgroundColor,
-                },
-                // active item
+                drawerContentStyle: {},
+                drawerStyle: { backgroundColor: drawerBackgroundColor },
                 drawerActiveTintColor: drawerActiveTextColor,
                 drawerActiveBackgroundColor: drawerActiveBackgroundColor,
-                // inactive item
                 drawerInactiveTintColor: drawerInactiveTextColor,
                 drawerInactiveBackgroundColor: drawerInactiveBackgroundColor,
-                // general item 
-                drawerItemStyle: {
-                    borderRadius: 5,
-                },
-                drawerLabelStyle: {
-                    fontFamily: "FiraCode",
-                },
-                headerTitleStyle: {
-                    fontFamily: "FiraCode",
-                }
+                drawerItemStyle: { borderRadius: 5 },
+                drawerLabelStyle: { fontFamily: "FiraCode" },
+                headerTitleStyle: { fontFamily: "FiraCode" }
             }}>
-            <Drawer.Screen name="index" options={{ 
-                title: "Dashboard", 
-                drawerLabel: 'My dashboard',
-                drawerIcon: ({ color }) => (
-                    <View style={{ width: 20 }}>
-                        <FontAwesome name="dashboard" size={16} color={color} />
-                    </View>
-                ),
-            }} />
+            <Drawer.Screen 
+                name="(index)" 
+                options={({ route }) => {
+                    const routeName = getFocusedRouteNameFromRoute(route) ?? 'HomeTab'; // default tab
+
+                    const titles: Record<string, string> = {
+                        index: 'Dashboard',
+                        smoking: 'Smoking',
+                    };
+
+                    return {
+                        // Dynamically update drawer header title
+                        title: titles[routeName] ?? 'Dashboard',
+                        drawerLabel: 'My dashboard',
+                        drawerIcon: ({ color }) => (
+                            <View style={{ width: 20 }}>
+                                <FontAwesome name="dashboard" size={16} color={color} />
+                            </View>
+                        ),
+                    };
+                }}
+            />
             <Drawer.Screen name="profile" options={{ 
                 title: "My profile", 
                 drawerLabel: 'My profile',

@@ -1,12 +1,11 @@
+import Logo from "@/assets/images/sharingan.png";
 import { Button, ThemedText } from "@/components/ui";
 import { useAuth } from "@/lib/auth";
 import { useMinimumLoadingTime } from "@/lib/hooks/useMinimumLoadingTime";
 import { Image } from 'expo-image';
+import { useState } from "react";
 import { ActivityIndicator, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from "react-native-safe-area-context";
-
-import Logo from "@/assets/images/sharingan.png";
-import { useState } from "react";
 
 const ComponentWithErrors = () => {
     throw new Error("This component just crashed, oh noes!");
