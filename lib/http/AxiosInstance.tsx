@@ -1,7 +1,10 @@
 import axios, { AxiosHeaders, AxiosInstance } from 'axios';
+import Constants from 'expo-constants';
 
 let authToken: string | null = null;
 let onUnauthorized: (() => void) | null = null;
+
+const env = Constants.expoConfig?.extra || {};
 
 export const setAuthToken = (token: string | null) => {
     authToken = token;
@@ -17,7 +20,7 @@ export const setUnauthorizedHandler = (handler: () => void) => {
 };
 
 export const http: AxiosInstance = axios.create({
-    baseURL: process.env.EXPO_PUBLIC_API_BASE_URL, // Validated at app startup
+    baseURL: env.EXPO_PUBLIC_API_BASE_URL, // Validated at app startup
     timeout: 15_000,
     // withCredentials: true, // enable if you use cookies
 });

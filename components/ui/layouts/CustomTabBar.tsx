@@ -4,25 +4,31 @@ import { Pressable, StyleSheet, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 
-const CustomTabBar = ({ state, descriptors, navigation }: BottomTabBarProps) => {
+export const CustomTabBar = ({ state, descriptors, navigation }: BottomTabBarProps) => {
     const insets = useSafeAreaInsets();
-    const backgroundColor = useThemeColor({ light: '#fff', dark: '#000' }, 'background');
+    const backgroundColor = useThemeColor({ light: '#fff', dark: '#080808' }, 'background');
     const activeColor = useThemeColor({ light: '#0a7ea4', dark: '#fff' }, 'tint');
-    const inactiveColor = useThemeColor({ light: '#687076', dark: '#9BA1A6' }, 'tabIconDefault');
+    const inactiveColor = useThemeColor({ light: '#687076', dark: '#aaa' }, 'tabIconDefault');
 
     return (
         <View style={[styles.wrapper, { backgroundColor, paddingBottom: insets.bottom + 8 }]}>
             {state.routes.map((route, index) => {
-                const { options } = descriptors[route.key];
-                const label =
-                options.tabBarLabel !== undefined
-                    ? options.tabBarLabel
-                    : options.title !== undefined
-                        ? options.title
-                        : route.name;
+                const descriptor = descriptors[route.key];
+                if (!descriptor) return null;
+
+                const { options } = descriptor;
 
                 const isFocused = state.index === index;
                 const color = isFocused ? activeColor : inactiveColor;
+
+                const label =
+                    options.tabBarLabel !== undefined
+                        ? typeof options.tabBarLabel === 'function'
+                            ? options.tabBarLabel({ focused: isFocused, color, position: 'below-icon', children: route.name })
+                            : options.tabBarLabel
+                        : options.title !== undefined
+                            ? options.title
+                            : route.name;
 
                 const onPress = () => {
                     const event = navigation.emit({
@@ -66,13 +72,13 @@ const CustomTabBar = ({ state, descriptors, navigation }: BottomTabBarProps) => 
 
 export default CustomTabBar;
 
-
 const styles = StyleSheet.create({
     wrapper: {
         flexDirection: "row",
-        paddingTop: 8,
+        paddingTop: 14,
         borderTopWidth: 1,
-        borderTopColor: 'rgba(0, 0, 0, 0.1)',
+        // borderTopColor: 'rgba(255, 255, 255, 0.05)',
+
     },
     tabItem: {
         flex: 1,

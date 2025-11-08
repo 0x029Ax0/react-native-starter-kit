@@ -32,12 +32,13 @@ import {
     UpdateProfileResponse,
     User
 } from "./types";
-
+import Constants from 'expo-constants';
 import { getExtension, getMimeType, handleApiMutation, retryWithBackoff } from "./utils";
 
 
 export const AuthProvider = ({ children }: PropsWithChildren) => {
     const router = useRouter();
+    const env = Constants.expoConfig?.extra || {};
 
     // State
     const [state, setState] = useState<AuthState>("loading");
@@ -51,7 +52,7 @@ export const AuthProvider = ({ children }: PropsWithChildren) => {
     const isMounted = useRef(true);
 
     // Secure storage for the accessToken
-    const accessTokenStoreKey = process.env.EXPO_PUBLIC_API_TOKEN_STORAGE_KEY ?? "starter-kit-access-token";
+    const accessTokenStoreKey = env.EXPO_PUBLIC_API_TOKEN_STORAGE_KEY ?? "starter-kit-access-token";
     const saveAccessToken = useCallback(async (token: string) => {
         if (Platform.OS === "web") {
             localStorage.setItem(accessTokenStoreKey, token);

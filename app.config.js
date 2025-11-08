@@ -1,4 +1,4 @@
-{
+export default {
     "expo": {
         "name": "zero",
         "slug": "zero",
@@ -20,7 +20,10 @@
             },
             "edgeToEdgeEnabled": true,
             "predictiveBackGestureEnabled": false,
-            "package": "com.anonymous.app.zero"
+            "package": "com.anonymous.app.zero",
+            "permissions": [
+                "android.permission.RECORD_AUDIO"
+            ]
         },
         "web": {
             "output": "static",
@@ -99,6 +102,14 @@
         "experiments": {
             "typedRoutes": true,
             "reactCompiler": true
+        },
+        "extra": {
+            "EXPO_PUBLIC_API_BASE_URL": process.env.EXPO_PUBLIC_API_BASE_URL,
+            "EXPO_PUBLIC_API_TOKEN_STORAGE_KEY": process.env.EXPO_PUBLIC_API_TOKEN_STORAGE_KEY,
+            "router": {},
+            "eas": {
+                "projectId": "1b973f34-5ff8-4805-a73d-f5f89b1cfb66"
+            }
         }
     }
 }

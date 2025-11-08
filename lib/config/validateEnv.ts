@@ -1,15 +1,18 @@
+import Constants from 'expo-constants';
+
 /**
  * Validates that all required environment variables are set
  * @throws {Error} If any required environment variables are missing
  */
 export function validateEnv(): void {
+    const env = Constants.expoConfig?.extra || {};
+
     const required = [
         'EXPO_PUBLIC_API_BASE_URL',
         'EXPO_PUBLIC_API_TOKEN_STORAGE_KEY',
     ];
 
-    const missing = required.filter(key => !process.env[key]);
-
+    const missing = required.filter(key => !env[key]);
     if (missing.length > 0) {
         throw new Error(
             `❌ Missing required environment variables:\n\n` +
@@ -21,7 +24,7 @@ export function validateEnv(): void {
     }
 
     // Validate that API base URL is a valid URL
-    const baseUrl = process.env.EXPO_PUBLIC_API_BASE_URL;
+    const baseUrl = env.EXPO_PUBLIC_API_BASE_URL;
     if (baseUrl) {
         try {
             new URL(baseUrl);
